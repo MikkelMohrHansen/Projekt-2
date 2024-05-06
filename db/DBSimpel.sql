@@ -24,8 +24,18 @@ CREATE TABLE attendTable (
     FOREIGN KEY (studentID) REFERENCES students(studentID)
 );
 
+CREATE TABLE teachers(
+    teacherID INT not null AUTO_INCREMENT,
+    mail VARCHAR(50),
+    passW VARCHAR(50),
+    PRIMARY KEY (teacherID)
+);
+
 INSERT INTO students(firstName, surname)
 VALUES("Test", "Testson");
 
 INSERT INTO rooms(roomName)
 VALUES("lab");
+
+INSERT INTO teachers(mail, passW)
+VALUES("test@ucn.dk", "test");

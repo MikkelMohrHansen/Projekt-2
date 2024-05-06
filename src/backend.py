@@ -1,20 +1,21 @@
 from flask import Flask, request, jsonify
-import mysql.connector
+import mysql.connector as mysql
 import json
 
 app = Flask(__name__)
 
 class DataHandler:
     def __init__(self):
-        self.db = mysql.connector.connect(
-        host="127.0.0.1",
-        user="",
-        passwd="root",
-        database="DBSimpel"
+        self.db = mysql.connect(
+        host="localhost",
+        user="user",
+        passwd="password",
+        database="mysql"
         )
         self.mycursor = self.db.cursor()
 
         self.session = SessionHandler(self.db, self.mycursor)
+        print("connected to database")
 
     def generate_room(self, operation_type=None, room_name=None):
         try: 
