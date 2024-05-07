@@ -10,7 +10,7 @@ class DataHandler:
         host="localhost",
         user="user",
         passwd="password",
-        database="mysql"
+        database="DBSimpel"
         )
         self.mycursor = self.db.cursor()
 
