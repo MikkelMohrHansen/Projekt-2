@@ -21,6 +21,12 @@ input[type="email"], input[type="password"] {
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+
+#email.error,
+#password.error {
+    border: 1px solid #8c1414;
+}
+
 button {
     width: 100%;
     padding: 10px;
