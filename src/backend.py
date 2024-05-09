@@ -85,6 +85,9 @@ data_handler = DataHandler()
 @app.route('/', methods=['POST'])
 def handle():
     data = request.json
+
+    print(data)
+
     if not data:
         return jsonify(error="No JSON data received."), 400
 
@@ -100,7 +103,7 @@ def handle():
         operation_type = data.get('operation_type')
 
         result = data_handler.generate_room(operation_type, room_name)
-        return jsonify(result=result), 200
+        return jsonify(result), 200
 
     elif subject == 'generate_student':
         student_name = data.get('student_name')
@@ -110,7 +113,7 @@ def handle():
         operation_type = data.get('operation_type')
 
         result = data_handler.generate_student(operation_type, student_name)
-        return jsonify(result=result), 200
+        return jsonify(result), 200
 
     elif subject == 'check_in':
         # Room id, student id / card id
@@ -121,9 +124,10 @@ def handle():
             return jsonify(error="No 'room_id' or 'student_id' specified in JSON data."), 400
 
         result = data_handler.generate_student(room_id, student_id)
-        return jsonify(result=result), 200
+        return jsonify(result), 200
 
     elif subject == 'login request':
+        print("Recieved login request")
         username = data.get('user')
         password = data.get('pass')
 
@@ -131,7 +135,7 @@ def handle():
             return jsonify(error="No 'user' or 'pass' specified in JSON data."), 400
 
         result = data_handler.login_procedure(username, password)
-        return jsonify(result=result), 200
+        return jsonify(result), 200
 
     return jsonify(error=f"Data '{subject}' not supported."), 400
 
