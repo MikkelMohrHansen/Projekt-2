@@ -54,6 +54,25 @@ class DataHandler:
         
         except Exception as e:
             return e
+        
+    def login_procedure(self, username, password):
+        try:
+            self.mycursor.execute('SELECT mail, passW FROM teachers WHERE (mail, passW) = (%s, %s)', (username, password)) #Kigger databasen igennem for den indtastet mail og passwd
+            result = self.mycursor.fetchone()
+
+            if result:
+                response_data = {
+                    'status': 'Login: Credentials accepted'
+                }
+                return response_data
+            else:
+                response_data = {
+                    'status': 'Error: Invalid credentials'
+                }
+                return response_data
+            
+        except Exception as e:
+            return e
 
 
 class SessionHandler:
@@ -66,12 +85,15 @@ data_handler = DataHandler()
 @app.route('/', methods=['POST'])
 def handle():
     data = request.json
+
+    print(data)
+
     if not data:
         return jsonify(error="No JSON data received."), 400
 
-    subject = data.get('Subject')
+    subject = data.get('data')
     if not subject:
-        return jsonify(error="No 'Subject' specified in JSON data."), 400
+        return jsonify(error="No 'Data' specified in JSON data."), 400
 
     if subject == 'generate_room':
         room_name = data.get('room_name')
@@ -81,7 +103,7 @@ def handle():
         operation_type = data.get('operation_type')
 
         result = data_handler.generate_room(operation_type, room_name)
-        return jsonify(result=result), 200
+        return jsonify(result), 200
 
     elif subject == 'generate_student':
         student_name = data.get('student_name')
@@ -91,7 +113,7 @@ def handle():
         operation_type = data.get('operation_type')
 
         result = data_handler.generate_student(operation_type, student_name)
-        return jsonify(result=result), 200
+        return jsonify(result), 200
 
     elif subject == 'check_in':
         # Room id, student id / card id
@@ -102,9 +124,20 @@ def handle():
             return jsonify(error="No 'room_id' or 'student_id' specified in JSON data."), 400
 
         result = data_handler.generate_student(room_id, student_id)
-        return jsonify(result=result), 200
+        return jsonify(result), 200
 
-    return jsonify(error=f"Subject '{subject}' not supported."), 400
+    elif subject == 'login request':
+        print("Recieved login request")
+        username = data.get('user')
+        password = data.get('pass')
+
+        if not username or not password:
+            return jsonify(error="No 'user' or 'pass' specified in JSON data."), 400
+
+        result = data_handler.login_procedure(username, password)
+        return jsonify(result), 200
+
+    return jsonify(error=f"Data '{subject}' not supported."), 400
 
 if __name__ == "__main__":
     app.run(debug=True, port=13371)
