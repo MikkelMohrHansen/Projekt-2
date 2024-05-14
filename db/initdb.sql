@@ -1,12 +1,19 @@
-CREATE DATA IF NOT EXISTS LogunitDB;
+CREATE DATABASE IF NOT EXISTS LogunitDB;
 use LogunitDB;
+
+CREATE TABLE UddannelsesHold(
+    uddannelseID int not NULL AUTO_INCREMENT,
+    uddannelseNavn varchar (70),
+    tidsPunkt TIME,
+    PRIMARY KEY (uddannelseID)
+);
 
 CREATE TABLE Students(
     studentID int not NULL AUTO_INCREMENT,
     navn varchar(255) NOT NULL,
-    uddannelseID int NOT NULL,
+    uddannelseID int,
     opstartsDato DATE,
-    PRIMARY KEY (studentID)
+    PRIMARY KEY (studentID),
     FOREIGN KEY (uddannelseID) REFERENCES UddannelsesHold(uddannelseID)
 );
 
@@ -21,15 +28,10 @@ CREATE TABLE Underviser(
     email varchar (70),
     password varchar (70),
     uddannelseID int,
-    FOREIGN KEY (uddannelseID) REFERENCES UddannelsesHold(uddannelseID)
-)
+    FOREIGN KEY (uddannelseID) REFERENCES UddannelsesHold(uddannelseID),
+    PRIMARY KEY (underviserID)
+);
 
-CREATE TABLE UddannelsesHold(
-    uddannelseID int not NULL AUTO_INCREMENT,
-    uddannelseNavn varchar (70),
-    tidsPunkt DATE
-    PRIMARY KEY (tidsPunkt)
-)
 
 CREATE TABLE Checkind(
     studentID int NOT NULL,
@@ -38,11 +40,23 @@ CREATE TABLE Checkind(
     FOREIGN KEY (lokaleID) REFERENCES Lokaler(lokaleID),
     FOREIGN KEY (studentID) REFERENCES Students(studentID),
     PRIMARY KEY (studentID)
-)
-CREATE TABLE underviserHold(
+);
+CREATE TABLE UnderviserHold(
     underviserID int NOT NULL,
-    uddannelseID INT NOT NULL,
+    uddannelseID int,
     FOREIGN KEY (underviserID) REFERENCES Underviser (underviserID),
     FOREIGN KEY (uddannelseID) REFERENCES UddannelsesHold (uddannelseID),
     PRIMARY KEY (underviserID, uddannelseID)
-)
+);
+
+INSERT INTO UddannelsesHold(uddannelseNavn, tidspunkt)
+VALUES("IT-Teknolog", '8:30:00');
+
+INSERT INTO Students(navn)
+VALUES("Test_Testson");
+
+INSERT INTO Lokaler(lokaleNavn)
+VALUES("lab");
+
+INSERT INTO Underviser(email, password)
+VALUES("test@ucn.dk", "test");
