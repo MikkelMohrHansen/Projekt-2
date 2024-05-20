@@ -3,14 +3,14 @@ services:
   mysql:
     restart: always
     container_name: "mysql"
-    image: minityhyi/mysqldb:2.0
+    image: minityhyi/mysqldb:3.0
     ports:
       - 3306:3306
     command: --init-file /data/application/init.sql
     environment:
       - MYSQL_ROOT_USER=user
       - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=DBSimpel
+      - MYSQL_DATABASE=LogunitDB
       - MYSQL_USER=user
       - MYSQL_PASSWORD=password
     volumes:

@@ -2,4 +2,4 @@ FROM mysql:latest
 
 ENV MYSQL_ROOT_PASSWORD=root
 
-COPY ./initdb.sql /docker-entrypoint-initdb.d/
+COPY ./init.sql /docker-entrypoint-initdb.d/
