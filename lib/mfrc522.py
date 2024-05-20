@@ -29,7 +29,7 @@ class MFRC522:
 		if board == 'WiPy' or board == 'LoPy' or board == 'FiPy':
 			self.spi = SPI(0)
 			self.spi.init(SPI.MASTER, baudrate=1000000, pins=(self.sck, self.mosi, self.miso))
-		elif board == 'esp8266':
+		elif board == 'esp8266' or board == 'esp32':
 			self.spi = SPI(baudrate=100000, polarity=0, phase=0, sck=self.sck, mosi=self.mosi, miso=self.miso)
 			self.spi.init()
 		else:
@@ -219,11 +219,15 @@ class MFRC522:
 			stat = self.ERR
 		else:
 			buf = []
-			for i in range(16):
-				buf.append(data[i])
+			try:
+				for i in range(len(data)):
+					buf.append(data[i])
+			except IndexError:
+				pass
 			buf += self._crc(buf)
 			(stat, recv, bits) = self._tocard(0x0C, buf)
 			if not (stat == self.OK) or not (bits == 4) or not ((recv[0] & 0x0F) == 0x0A):
 				stat = self.ERR
 
 		return stat
+

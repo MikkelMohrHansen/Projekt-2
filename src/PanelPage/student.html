@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Dashboard</title>
+        <title>Student | Profile</title>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <link rel="stylesheet" href="css/dashboard.css" type="text/css"/>
+        <link rel="stylesheet" href="css/student.css" type="text/css"/>
         <link rel="stylesheet" href="css/shared.css" type="text/css"/>
         <link rel="stylesheet" href="css/search.css" type="text/css"/>
-
     </head>
     <body>
         <div id="top-bar">
@@ -15,6 +14,7 @@
             
             <div id="search-timelogger-container">
                 <input type="text" placeholder="Search TimeLogger" id="inputbox_searchtimelogger">
+                <div id="search-results"></div>
             </div>
 
             <img id="refresh-btn" src="img/placeholder.png" alt="refresh">
@@ -41,13 +41,33 @@
                 <div id="bar-1">
                     <p>Dashboard</p>
                 </div>
+                <div id="bar-2">
+                    <p>Student</p>
+                </div>
             </div>
         </div>
 
         <div id="content-wnd">
-            <div id="Noget1"></div>
-            <div id="Noget2"></div>
-            <div id="teams-overview"></div>
+            <div id="information">
+                <h1 id="name">{Insert Name}</h1>
+
+                <h3 id="school-team">{Insert School - Team}</h3>
+            </div>
+            <div id="statistics">
+
+                <div id="check-in-percentage">
+                    <h2>Gennemsnitlige fremøde</h2>
+
+                    <h3 id="check-in-percentage-text">87%</h3>
+                </div>
+
+            </div>
+            <div id="teachers">
+                <h2>Tildelte Undervisere</h2>
+
+                <p id="teacher-1">Søren Lynge</p>
+                <p id="teacher-2">Frank Poulsen</p>
+            </div>
         </div>
 
     </body>

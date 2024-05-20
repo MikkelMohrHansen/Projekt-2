@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect, url_for
 import mysql.connector as mysql
 import json
 
@@ -12,34 +12,10 @@ class DataHandler:
         passwd="password",
         database="DBSimpel"
         )
-        self.mycursor = self.db.cursor()
+        self.mycursor = self.db.cursor(dictionary=True)
 
         self.session = SessionHandler(self.db, self.mycursor)
         print("connected to database")
-
-    def generate_room(self, operation_type=None, room_name=None):
-        try: 
-            if "add" == operation_type:
-                self.mycursor.execute('INSERT INTO rooms (roomName) VALUES (%s)', (room_name,))
-                self.db.commit()
-            elif "delete" == operation_type:
-                self.mycursor.execute('DELETE FROM rooms WHERE roomName = %s', (room_name,)) # 
-                self.db.commit()
-            
-        except Exception as e:
-            return e
-
-    def generate_student(self, operation_type=None, student_name=None):
-        try:
-            if "add" == operation_type:
-                self.mycursor.execute('INSERT INTO students (studentName) VALUES (%s)', (student_name,))
-                self.db.commit()
-            elif "delete" == operation_type:
-                self.mycursor.execute('DELETE FROM students WHERE studentName = %s', (student_name,)) # 
-                self.db.commit()
-
-        except Exception as e:
-            return e
 
     def check_in(self, room_id=None, student_id=None):
         try:
@@ -74,6 +50,16 @@ class DataHandler:
         except Exception as e:
             return e
 
+    def search(self, query):
+        try:
+            search_term = f"%{query}%"
+            self.mycursor.execute("SELECT id, name FROM student_tabel WHERE name LIKE %s", (search_term,))
+            result = self.mycursor.fetchall()
+
+            return jsonify(result)
+            
+        except Exception as e:
+            return e
 
 class SessionHandler:
     def __init__(self, database, cursor):
@@ -82,62 +68,60 @@ class SessionHandler:
 
 data_handler = DataHandler()
 
+@app.route('/student_profile')
+def student_profile():
+    student_id = request.args.get('id')
+    return redirect(url_for('profile', id=student_id))
+
+@app.route('/profile/<id>')
+def profile(id):
+    return f"Student Profile Page for Student ID: {id}"
+
 @app.route('/', methods=['POST'])
 def handle():
-    data = request.json
+    path = request.path
 
-    print(data)
+    print(path)
 
-    if not data:
-        return jsonify(error="No JSON data received."), 400
+    match(path):
+        case 'check_in':
+            # Room id, student id / card id
+            data = request.get_json()
+            room_id = data.get('room_id')
+            student_id = data.get('student_id')
 
-    subject = data.get('data')
-    if not subject:
-        return jsonify(error="No 'Data' specified in JSON data."), 400
+            if not room_id or not student_id:
+                return jsonify(error="No 'room_id' or 'student_id' specified in JSON data."), 400
 
-    if subject == 'generate_room':
-        room_name = data.get('room_name')
-        if not room_name:
-            return jsonify(error="No 'room_name' specified in JSON data."), 400
+            result = data_handler.generate_student(room_id, student_id)
+            return jsonify(result), 200
         
-        operation_type = data.get('operation_type')
+        case '/api/login':
+            data = request.get_json()
+            print("Recieved login request")
+            username = data.get('user')
+            password = data.get('pass')
 
-        result = data_handler.generate_room(operation_type, room_name)
-        return jsonify(result), 200
+            if not username or not password:
+                return jsonify(error="No 'user' or 'pass' specified in JSON data."), 400
 
-    elif subject == 'generate_student':
-        student_name = data.get('student_name')
-        if not student_name:
-            return jsonify(error="No 'student_name' specified in JSON data."), 400
+            result = data_handler.login_procedure(username, password)
+            return jsonify(result), 200
 
-        operation_type = data.get('operation_type')
+        case '/api/search':
+            data = request.get_json()
+            query = data.get('search', '')
 
-        result = data_handler.generate_student(operation_type, student_name)
-        return jsonify(result), 200
+            if not query:
+                return jsonify([])
 
-    elif subject == 'check_in':
-        # Room id, student id / card id
-        room_id = data.get('room_id')
-        student_id = data.get('student_id')
 
-        if not room_id or not student_id:
-            return jsonify(error="No 'room_id' or 'student_id' specified in JSON data."), 400
+            result = data_handler.search(query)
+            return jsonify(result), 200
+        case _:
+            return jsonify(error=f"Data '{path}' not supported."), 400
 
-        result = data_handler.generate_student(room_id, student_id)
-        return jsonify(result), 200
 
-    elif subject == 'login request':
-        print("Recieved login request")
-        username = data.get('user')
-        password = data.get('pass')
-
-        if not username or not password:
-            return jsonify(error="No 'user' or 'pass' specified in JSON data."), 400
-
-        result = data_handler.login_procedure(username, password)
-        return jsonify(result), 200
-
-    return jsonify(error=f"Data '{subject}' not supported."), 400
 
 if __name__ == "__main__":
     app.run(debug=True, port=13371)
