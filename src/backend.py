@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, redirect, url_for
 import mysql.connector as mysql
-import json
 
 app = Flask(__name__)
 
@@ -10,7 +9,7 @@ class DataHandler:
         host="localhost",
         user="user",
         passwd="password",
-        database="DBSimpel"
+        database="LogunitDB"
         )
         self.mycursor = self.db.cursor(dictionary=True)
 
@@ -25,7 +24,7 @@ class DataHandler:
             self.mycursor.execute('SELECT studentName FROM students WHERE studentID = %s', (student_id,))
             student_name = self.mycursor.fetchone()
             
-            self.mycursor.execute('INSERT INTO attendTable (studentName, roomName, studentID) VALUES (%s, %s, %s)', (student_name, room_name, student_id))
+            self.mycursor.execute('INSERT INTO Checkind (studentName, roomName, studentID) VALUES (%s, %s, %s)', (student_name, room_name, student_id))
             self.db.commit()
         
         except Exception as e:
@@ -33,7 +32,7 @@ class DataHandler:
         
     def login_procedure(self, username, password):
         try:
-            self.mycursor.execute('SELECT mail, passW FROM teachers WHERE (mail, passW) = (%s, %s)', (username, password)) #Kigger databasen igennem for den indtastet mail og passwd
+            self.mycursor.execute('SELECT mail, passW FROM Underviser WHERE (email, password) = (%s, %s)', (username, password)) #Kigger databasen igennem for den indtastet mail og passwd
             result = self.mycursor.fetchone()
 
             if result:
@@ -53,7 +52,7 @@ class DataHandler:
     def search(self, query):
         try:
             search_term = f"%{query}%"
-            self.mycursor.execute("SELECT id, name FROM student_tabel WHERE name LIKE %s", (search_term,))
+            self.mycursor.execute("SELECT id, name FROM Students WHERE navn LIKE %s", (search_term,))
             result = self.mycursor.fetchall()
 
             return jsonify(result)
@@ -79,14 +78,14 @@ def profile(id):
 
 @app.route('/', methods=['POST'])
 def handle():
-    path = request.path
+    data = request.json
 
-    print(path)
+    print(data)
 
-    match(path):
+    subject = data.get('data')
+    match(subject):
         case 'check_in':
             # Room id, student id / card id
-            data = request.get_json()
             room_id = data.get('room_id')
             student_id = data.get('student_id')
 
@@ -96,8 +95,7 @@ def handle():
             result = data_handler.generate_student(room_id, student_id)
             return jsonify(result), 200
         
-        case '/api/login':
-            data = request.get_json()
+        case 'login':
             print("Recieved login request")
             username = data.get('user')
             password = data.get('pass')
@@ -108,8 +106,7 @@ def handle():
             result = data_handler.login_procedure(username, password)
             return jsonify(result), 200
 
-        case '/api/search':
-            data = request.get_json()
+        case 'search':
             query = data.get('search', '')
 
             if not query:
@@ -119,7 +116,7 @@ def handle():
             result = data_handler.search(query)
             return jsonify(result), 200
         case _:
-            return jsonify(error=f"Data '{path}' not supported."), 400
+            return jsonify(error=f"Data '{subject}' not supported."), 400
 
 
 

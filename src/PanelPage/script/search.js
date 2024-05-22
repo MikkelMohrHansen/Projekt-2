@@ -3,11 +3,11 @@ document.getElementById('inputbox_searchtimelogger').addEventListener('input', f
 
     if (query.length > 0) {
         var senddata = {
-            data: 'search query',
+            data: 'search',
             search: query
         };
         
-        fetch('https://79.148.171.163/api', {
+        fetch('https://79.171.148.163/api', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
