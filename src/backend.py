@@ -6,7 +6,7 @@ app = Flask(__name__)
 class DataHandler:
     def __init__(self):
         self.db = mysql.connect(
-        host="localhost",
+        host="79.171.148.163",
         user="user",
         passwd="password",
         database="LogunitDB"
@@ -32,19 +32,21 @@ class DataHandler:
         
     def login_procedure(self, username, password):
         try:
-            self.mycursor.execute('SELECT mail, passW FROM Underviser WHERE (email, password) = (%s, %s)', (username, password)) #Kigger databasen igennem for den indtastet mail og passwd
+            self.mycursor.execute('SELECT email, password FROM Underviser WHERE (email, password) = (%s, %s)', (username, password))
             result = self.mycursor.fetchone()
+
+            response_data = ''
 
             if result:
                 response_data = {
                     'status': 'Login: Credentials accepted'
                 }
-                return response_data
             else:
                 response_data = {
                     'status': 'Error: Invalid credentials'
                 }
-                return response_data
+
+            return response_data
             
         except Exception as e:
             return e
@@ -52,11 +54,36 @@ class DataHandler:
     def search(self, query):
         try:
             search_term = f"%{query}%"
-            self.mycursor.execute("SELECT id, name FROM Students WHERE navn LIKE %s", (search_term,))
+            self.mycursor.execute("SELECT studentID, navn FROM Students WHERE navn LIKE %s", (search_term,))
             result = self.mycursor.fetchall()
 
-            return jsonify(result)
+            return result
             
+        except Exception as e:
+            return e
+
+    def profile(self, id):
+        try:
+            self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold WHERE uddannelseID = %s", (id,))
+            uddannelse_navn = self.mycursor.fetchone()
+
+            self.mycursor.execute("SELECT navn FROM Students WHERE studentID = %s", (id,))
+            student_info = self.mycursor.fetchone()
+
+            response_data = ''
+
+            if uddannelse_navn and student_info:
+                response_data = {
+                    'navn': student_info,
+                    'uddannelseNavn': uddannelse_navn  
+                }
+            else:
+                response_data = {
+                    'status': 'Error: Student not found'
+                }
+
+            return response_data
+
         except Exception as e:
             return e
 
@@ -66,15 +93,6 @@ class SessionHandler:
         self.mycursor = cursor
 
 data_handler = DataHandler()
-
-@app.route('/student_profile')
-def student_profile():
-    student_id = request.args.get('id')
-    return redirect(url_for('profile', id=student_id))
-
-@app.route('/profile/<id>')
-def profile(id):
-    return f"Student Profile Page for Student ID: {id}"
 
 @app.route('/', methods=['POST'])
 def handle():
@@ -115,6 +133,16 @@ def handle():
 
             result = data_handler.search(query)
             return jsonify(result), 200
+        
+        case 'profile':
+            student_id = data.get('id')
+
+            if not student_id:
+                return jsonify(error="No 'studentID' specified in JSON data."), 400
+
+            result = data_handler.profile(student_id)
+            return jsonify(result), 200
+
         case _:
             return jsonify(error=f"Data '{subject}' not supported."), 400
 
