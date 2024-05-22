@@ -64,11 +64,14 @@ class DataHandler:
 
     def profile(self, id):
         try:
-            self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold WHERE uddannelseID = %s", (id,))
-            uddannelse_navn = self.mycursor.fetchone()
+            self.mycursor.execute("SELECT uddannelseID FROM Students WHERE studentID = %s", (id,))
+            uddannelse_id = self.mycursor.fetchone()['uddannelseID']
+
+            self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold WHERE uddannelseID = %s", (uddannelse_id,))
+            uddannelse_navn = self.mycursor.fetchone()['uddannelseNavn']
 
             self.mycursor.execute("SELECT navn FROM Students WHERE studentID = %s", (id,))
-            student_info = self.mycursor.fetchone()
+            student_info = self.mycursor.fetchone()['navn']
 
             response_data = ''
 

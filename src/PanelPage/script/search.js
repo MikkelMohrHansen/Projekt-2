@@ -24,7 +24,7 @@ document.getElementById('inputbox_searchtimelogger').addEventListener('input', f
                 div.textContent = student.navn;
                 div.addEventListener('click', () => {
                     console.log('Student ID:', student.studentID);
-                    window.location.href = `student.html?id=${student.id}`;
+                    window.location.href = `student.html?id=${student.studentID}`;
                 });
                 resultsContainer.appendChild(div);
             });
