@@ -62,12 +62,12 @@ function sendData() {
             document.getElementById('inputbox_deviceid').classList.add('error');
             document.getElementById('inputbox_password').classList.add('error');
 
-            responseStatusText.textContent = "You have entered an invalid username or password";
+            responseStatusText.textContent = "Du har indstastet et ugyldigt brugernavn eller kodeord";
 
             throw new Error("HTTP error; 401 Unauthorized; Invalid credentials");
         } else {
             console.log('520 Unknown; Unknown error occurred');
-            responseStatusText.textContent = "An unknown error occured. Please fill out the 'contact us' form for assistance";
+            responseStatusText.textContent = "Ukendt fejl";
             
             throw new Error("HTTP error; 520 Unknown; Unknown error occurred");
         }

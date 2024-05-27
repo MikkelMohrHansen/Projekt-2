@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect, url_for
+from flask import Flask, request, jsonify
 import mysql.connector as mysql
 
 app = Flask(__name__)
