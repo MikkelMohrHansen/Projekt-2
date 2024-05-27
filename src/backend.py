@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, redirect, url_for
 import mysql.connector as mysql
+import bcrypt
 
 app = Flask(__name__)
 
@@ -37,7 +38,7 @@ class DataHandler:
 
             response_data = ''
 
-            if result:
+            if result and bcrypt.checkpw(password.encode('utf-8'), result['password'].encode('utf-8')):
                 response_data = {
                     'status': 'Login: Credentials accepted'
                 }
@@ -87,6 +88,15 @@ class DataHandler:
 
             return response_data
 
+        except Exception as e:
+            return e
+    
+    def register_user(self, username, password):
+        try:
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            self.mycursor.execute('INSERT INTO Underviser (email, password (%s, %s)', (username, hashed_password.decode('utf-8')))
+            self.db.commit()
+            return {'status': 'User registrered successfully'}
         except Exception as e:
             return e
 
@@ -145,11 +155,16 @@ def handle():
 
             result = data_handler.profile(student_id)
             return jsonify(result), 200
+        
+        case 'register':
+            username = data.get('user')
+            password = data.get('pass')
 
+            if not username or not password:
+                return jsonify("No 'user' or 'pass' specified in Json data"), 400
         case _:
             return jsonify(error=f"Data '{subject}' not supported."), 400
-
-
+        
 
 if __name__ == "__main__":
     app.run(debug=True, port=13371)
