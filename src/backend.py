@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect, url_for
 import mysql.connector as mysql
 import bcrypt
 
@@ -22,14 +22,22 @@ class DataHandler:
             self.mycursor.execute('SELECT roomName FROM rooms WHERE roomID = %s', (room_id,))
             room_name = self.mycursor.fetchone()
 
+            if not room_name:
+                return {"status": "error", "message": "Room not found"}, 404
+
             self.mycursor.execute('SELECT studentName FROM students WHERE studentID = %s', (student_id,))
             student_name = self.mycursor.fetchone()
+
+            if not student_name:
+                return{"status": "error", "message": "Student not found"}, 404
             
             self.mycursor.execute('INSERT INTO Checkind (studentName, roomName, studentID) VALUES (%s, %s, %s)', (student_name, room_name, student_id))
             self.db.commit()
+            return {"status": "success", "message": "Check-in successful"}, 200
         
         except Exception as e:
-            return e
+            self.db.rollback()
+            return {"status": "error", "message": str(e)}, 500
         
     def login_procedure(self, username, password):
         try:
@@ -123,7 +131,7 @@ def handle():
             if not room_id or not student_id:
                 return jsonify(error="No 'room_id' or 'student_id' specified in JSON data."), 400
 
-            result = data_handler.generate_student(room_id, student_id)
+            result = data_handler.check_in(room_id, student_id)
             return jsonify(result), 200
         
         case 'login':
