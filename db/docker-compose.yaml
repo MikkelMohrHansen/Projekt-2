@@ -3,24 +3,21 @@ services:
   mysql:
     restart: always
     container_name: "mysql"
-    image: minityhyi/mysqldb:3.0
+    image: minityhyi/mysqldb:5.0
     ports:
-      - 3306:3306
+      - "127.0.0.1:3306:3306"
     command: --init-file /data/application/init.sql
-    environment:
-      - MYSQL_ROOT_USER=user
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=LogunitDB
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
+    env_file:
+      - .env
     volumes:
       - ./init.sql:/data/application/init.sql
+    
 
   phpmyadmin:
     container_name: "phpmyadmin"
     image: phpmyadmin:latest
     ports:
-      - "8080:80"
+      - 8080:80
     environment:
       - PMA_ARBITRARY=1
 
