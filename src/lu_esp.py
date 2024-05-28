@@ -61,6 +61,15 @@ class HTTPClient:
     def __init__(self, server_url, room_id):
         self.server_url = server_url
         self.room_id = room_id
+        self.red_led = Pin(13, Pin.OUT)
+        self.green_led = Pin(14, Pin.OUT)
+    
+    def blink_led(self, led, times=10, delay=0.25):
+        for _ in range(times):
+            led.on()
+            sleep(delay)
+            led.off()
+            sleep(delay)
 
     def send_data(self, data):
         if student_id is not None:
@@ -74,6 +83,11 @@ class HTTPClient:
                 print(f"[+] Sending data: {json.dumps(data_packet)}")
                 response = urequests.post(self.server_url, json=data_packet)
                 print(f"Server response: {response.text}")
+                response_data = response.json()
+                if response_data[0]['status'] == 'success':
+                    self.blink_led(self.green_led)
+                else:
+                    self.blink_led(self.red_led)
             except Exception as e:
                 print(f"Unhandled exception: {e}")
 
