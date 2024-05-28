@@ -39,7 +39,7 @@ CREATE TABLE Checkind(
     checkIn TIMESTAMP,
     FOREIGN KEY (lokaleID) REFERENCES Lokaler(lokaleID),
     FOREIGN KEY (studentID) REFERENCES Students(studentID),
-    PRIMARY KEY (studentID)
+    PRIMARY KEY (studentID, checkIn)
 );
 CREATE TABLE UnderviserHold(
     underviserID int NOT NULL,

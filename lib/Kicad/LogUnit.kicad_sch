@@ -5,6 +5,142 @@
 	(uuid "9d88098b-233a-4b6f-bb56-5045204966fd")
 	(paper "A4")
 	(lib_symbols
+		(symbol "Device:C"
+			(pin_numbers hide)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "C"
+				(at 0.635 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C"
+				(at 0.635 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0.9652 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Unpolarized capacitor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "cap capacitor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "C_0_1"
+				(polyline
+					(pts
+						(xy -2.032 -0.762) (xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 0.762) (xy 2.032 0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "Device:LED"
 			(pin_numbers hide)
 			(pin_names
@@ -1548,10 +1684,22 @@
 		)
 	)
 	(junction
+		(at 106.68 102.87)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2da8ebff-430d-48cc-af14-c40bf483595c")
+	)
+	(junction
 		(at 154.94 111.76)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "3ea58efe-39b7-461f-b682-aeb2e3e1a919")
+	)
+	(junction
+		(at 106.68 95.25)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "40e48aa6-5bf5-4c70-ac55-a95828ce7003")
 	)
 	(junction
 		(at 185.42 116.84)
@@ -1669,16 +1817,6 @@
 	)
 	(wire
 		(pts
-			(xy 106.68 100.33) (xy 106.68 77.47)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0de19e79-4a58-49d5-972f-25ad63d98904")
-	)
-	(wire
-		(pts
 			(xy 154.94 111.76) (xy 161.29 111.76)
 		)
 		(stroke
@@ -1686,6 +1824,46 @@
 			(type default)
 		)
 		(uuid "10e8b168-6f45-4366-9e06-a94b3c3fb93b")
+	)
+	(wire
+		(pts
+			(xy 109.22 95.25) (xy 109.22 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "11fcfad6-727d-4a3e-b1b0-c570b8b350b2")
+	)
+	(wire
+		(pts
+			(xy 110.49 81.28) (xy 106.68 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1530ecaf-307d-47bd-899b-f5330263fc7d")
+	)
+	(wire
+		(pts
+			(xy 106.68 81.28) (xy 106.68 77.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1896963a-5b1b-4421-b755-ac634a9d923a")
+	)
+	(wire
+		(pts
+			(xy 106.68 95.25) (xy 109.22 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "313d3e40-ab05-4509-936c-b49986258828")
 	)
 	(wire
 		(pts
@@ -1709,6 +1887,26 @@
 	)
 	(wire
 		(pts
+			(xy 97.79 95.25) (xy 106.68 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4611b98f-fad5-4430-ab1f-c24eb5dd7050")
+	)
+	(wire
+		(pts
+			(xy 110.49 102.87) (xy 110.49 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4e65493a-c7a7-41a2-8a15-2d3bfac9a777")
+	)
+	(wire
+		(pts
 			(xy 185.42 109.22) (xy 185.42 116.84)
 		)
 		(stroke
@@ -1716,6 +1914,16 @@
 			(type default)
 		)
 		(uuid "55d8be57-be25-4d8c-b6fa-88183315217e")
+	)
+	(wire
+		(pts
+			(xy 97.79 100.33) (xy 100.33 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5cf138bf-16d2-4759-b79f-a9aa3f4c29fa")
 	)
 	(wire
 		(pts
@@ -1749,6 +1957,16 @@
 	)
 	(wire
 		(pts
+			(xy 106.68 102.87) (xy 110.49 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "77f521c6-e2c3-4ab1-a388-a13030e52779")
+	)
+	(wire
+		(pts
 			(xy 161.29 101.6) (xy 161.29 106.68)
 		)
 		(stroke
@@ -1779,13 +1997,13 @@
 	)
 	(wire
 		(pts
-			(xy 97.79 100.33) (xy 106.68 100.33)
+			(xy 100.33 102.87) (xy 106.68 102.87)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "aa2a18a3-6684-4ec0-9108-5683c533300a")
+		(uuid "a78d3ebc-24a3-4446-aa2e-efadd88bd5a3")
 	)
 	(wire
 		(pts
@@ -1809,6 +2027,16 @@
 	)
 	(wire
 		(pts
+			(xy 100.33 100.33) (xy 100.33 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c2767355-3ef2-41b5-a847-eb3024a62b18")
+	)
+	(wire
+		(pts
 			(xy 185.42 101.6) (xy 185.42 109.22)
 		)
 		(stroke
@@ -1829,16 +2057,6 @@
 	)
 	(wire
 		(pts
-			(xy 97.79 95.25) (xy 109.22 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cbc5ab1f-8270-4e93-a759-080ef6f96432")
-	)
-	(wire
-		(pts
 			(xy 154.94 106.68) (xy 161.29 106.68)
 		)
 		(stroke
@@ -1856,16 +2074,6 @@
 			(type default)
 		)
 		(uuid "e4251f4a-4846-4f32-9ebe-82e99ec44c2e")
-	)
-	(wire
-		(pts
-			(xy 109.22 95.25) (xy 109.22 105.41)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e610c42c-e70d-4430-9fc9-91d1c7740edf")
 	)
 	(wire
 		(pts
@@ -2798,6 +3006,76 @@
 			(project "LogUnit"
 				(path "/9d88098b-233a-4b6f-bb56-5045204966fd"
 					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 106.68 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ab190c89-582f-4b34-9395-29ca781c04a8")
+		(property "Reference" "C1"
+			(at 104.14 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "C"
+			(at 104.14 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_Tantalum_SMD:CP_EIA-1608-08_AVX-J_Pad1.25x1.05mm_HandSolder"
+			(at 107.6452 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 106.68 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 106.68 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "4a28733f-6bd6-4d75-b300-9524dee6cc1a")
+		)
+		(pin "1"
+			(uuid "5e7b208c-fb41-4dcc-96be-c39cd069ab7e")
+		)
+		(instances
+			(project "LogUnit"
+				(path "/9d88098b-233a-4b6f-bb56-5045204966fd"
+					(reference "C1")
 					(unit 1)
 				)
 			)
