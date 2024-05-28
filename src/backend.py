@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, redirect, url_for
 import mysql.connector as mysql
+import bcrypt
 
 app = Flask(__name__)
 
@@ -21,14 +22,22 @@ class DataHandler:
             self.mycursor.execute('SELECT roomName FROM rooms WHERE roomID = %s', (room_id,))
             room_name = self.mycursor.fetchone()
 
+            if not room_name:
+                return {"status": "error", "message": "Room not found"}, 404
+
             self.mycursor.execute('SELECT studentName FROM students WHERE studentID = %s', (student_id,))
             student_name = self.mycursor.fetchone()
+
+            if not student_name:
+                return{"status": "error", "message": "Student not found"}, 404
             
             self.mycursor.execute('INSERT INTO Checkind (studentName, roomName, studentID) VALUES (%s, %s, %s)', (student_name, room_name, student_id))
             self.db.commit()
+            return {"status": "success", "message": "Check-in successful"}, 200
         
         except Exception as e:
-            return e
+            self.db.rollback()
+            return {"status": "error", "message": str(e)}, 500
         
     def login_procedure(self, username, password):
         try:
@@ -37,7 +46,7 @@ class DataHandler:
 
             response_data = ''
 
-            if result:
+            if result and bcrypt.checkpw(password.encode('utf-8'), result['password'].encode('utf-8')):
                 response_data = {
                     'status': 'Login: Credentials accepted'
                 }
@@ -89,6 +98,15 @@ class DataHandler:
 
         except Exception as e:
             return e
+    
+    def register_user(self, username, password):
+        try:
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            self.mycursor.execute('INSERT INTO Underviser (email, password (%s, %s)', (username, hashed_password.decode('utf-8')))
+            self.db.commit()
+            return {'status': 'User registrered successfully'}
+        except Exception as e:
+            return e
 
 class SessionHandler:
     def __init__(self, database, cursor):
@@ -113,7 +131,7 @@ def handle():
             if not room_id or not student_id:
                 return jsonify(error="No 'room_id' or 'student_id' specified in JSON data."), 400
 
-            result = data_handler.generate_student(room_id, student_id)
+            result = data_handler.check_in(room_id, student_id)
             return jsonify(result), 200
         
         case 'login':
@@ -145,11 +163,16 @@ def handle():
 
             result = data_handler.profile(student_id)
             return jsonify(result), 200
+        
+        case 'register':
+            username = data.get('user')
+            password = data.get('pass')
 
+            if not username or not password:
+                return jsonify("No 'user' or 'pass' specified in Json data"), 400
         case _:
             return jsonify(error=f"Data '{subject}' not supported."), 400
-
-
+        
 
 if __name__ == "__main__":
     app.run(debug=True, port=13371)
