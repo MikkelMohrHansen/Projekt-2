@@ -14,7 +14,7 @@ class RC522_RFID:
         self.led_pin = Pin(12, Pin.OUT)
 
     def read_card(self):
-        print("Place card before reader to read from address 0x08")
+        #print("Place card before reader to read from address 0x08")
         
         try:
             # Request to find any RFID tag within range
@@ -62,24 +62,25 @@ class HTTPClient:
         self.server_url = server_url
         self.room_id = room_id
 
-    def send_data(self, student_id):
-        try:
-            # Create a data packet containing room_id and student_id
-            data_packet = {
-                'room_id': self.room_id,
-                'student_id': student_id
-            }
-            print(f"[+] Sending data: {json.dumps(data_packet)}")
-            # Send the data packet to the server
-            response = urequests.post(self.server_url, json=data_packet)
-            print(f"Server response: {response.text}")
-        except Exception as e:
-            print(f"Unhandled exception: {e}")
+    def send_data(self, data):
+        if student_id is not None:
+            try:
+                data_packet = {
+                    'data': 'check_in',
+                    'student_id': int(student_id),
+                    'room_id': self.room_id
+                    
+                }
+                print(f"[+] Sending data: {json.dumps(data_packet)}")
+                response = urequests.post(self.server_url, json=data_packet)
+                print(f"Server response: {response.text}")
+            except Exception as e:
+                print(f"Unhandled exception: {e}")
 
 if __name__ == "__main__":
     RFID = RC522_RFID()
-    server_url = "http://79.171.148.163/"
-    room_id = "CSD_5.0.35"
+    server_url = "https://79.171.148.163/api"
+    room_id = int("5035")
     http_client = HTTPClient(server_url, room_id)
     
     while True:
@@ -89,4 +90,6 @@ if __name__ == "__main__":
             # Send the student ID to the server
             http_client.send_data(student_id)
         sleep(1)
+
+
 
