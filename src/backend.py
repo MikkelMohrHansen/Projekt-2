@@ -9,7 +9,7 @@ class DataHandler:
         self.db = mysql.connect(
         host="79.171.148.163",
         user="user",
-        passwd="password",
+        passwd="MaaGodt*7913!",
         database="LogunitDB"
         )
         self.mycursor = self.db.cursor(dictionary=True)
