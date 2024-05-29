@@ -1,0 +1,15 @@
+#bar-2 p {
+    margin: 2px;
+}
+
+#bar-2:hover {
+    cursor: pointer;
+}
+
+#bar-2 {
+    background-color: lightgrey;
+    border-radius: 5px;
+    margin: 0;
+    padding-left: 2px;
+    padding-right: 2px;
+}

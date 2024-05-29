@@ -14,7 +14,7 @@ class RC522_RFID:
         self.led_pin = Pin(12, Pin.OUT)
 
     def read_card(self):
-        print("Place card before reader to read from address 0x08")
+        #print("Place card before reader to read from address 0x08")
         
         try:
             # Request to find any RFID tag within range
@@ -61,25 +61,40 @@ class HTTPClient:
     def __init__(self, server_url, room_id):
         self.server_url = server_url
         self.room_id = room_id
+        self.red_led = Pin(13, Pin.OUT)
+        self.green_led = Pin(14, Pin.OUT)
+    
+    def blink_led(self, led, times=10, delay=0.25):
+        for _ in range(times):
+            led.on()
+            sleep(delay)
+            led.off()
+            sleep(delay)
 
-    def send_data(self, student_id):
-        try:
-            # Create a data packet containing room_id and student_id
-            data_packet = {
-                'room_id': self.room_id,
-                'student_id': student_id
-            }
-            print(f"[+] Sending data: {json.dumps(data_packet)}")
-            # Send the data packet to the server
-            response = urequests.post(self.server_url, json=data_packet)
-            print(f"Server response: {response.text}")
-        except Exception as e:
-            print(f"Unhandled exception: {e}")
+    def send_data(self, data):
+        if student_id is not None:
+            try:
+                data_packet = {
+                    'data': 'check_in',
+                    'student_id': int(student_id),
+                    'room_id': self.room_id
+                    
+                }
+                print(f"[+] Sending data: {json.dumps(data_packet)}")
+                response = urequests.post(self.server_url, json=data_packet)
+                print(f"Server response: {response.text}")
+                response_data = response.json()
+                if response_data[0]['status'] == 'success':
+                    self.blink_led(self.green_led)
+                else:
+                    self.blink_led(self.red_led)
+            except Exception as e:
+                print(f"Unhandled exception: {e}")
 
 if __name__ == "__main__":
     RFID = RC522_RFID()
-    server_url = "http://79.171.148.163/"
-    room_id = "CSD_5.0.35"
+    server_url = "https://79.171.148.163/api"
+    room_id = int("5035")
     http_client = HTTPClient(server_url, room_id)
     
     while True:
@@ -89,4 +104,6 @@ if __name__ == "__main__":
             # Send the student ID to the server
             http_client.send_data(student_id)
         sleep(1)
+
+
 

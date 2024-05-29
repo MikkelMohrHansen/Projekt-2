@@ -14,24 +14,23 @@ class DataHandler:
         )
         self.mycursor = self.db.cursor(dictionary=True)
 
-        self.session = SessionHandler(self.db, self.mycursor)
         print("connected to database")
 
     def check_in(self, room_id=None, student_id=None):
         try:
-            self.mycursor.execute('SELECT roomName FROM rooms WHERE roomID = %s', (room_id,))
+            self.mycursor.execute('SELECT lokaleNavn FROM Lokaler WHERE lokaleID = %s', (room_id,))
             room_name = self.mycursor.fetchone()
 
             if not room_name:
                 return {"status": "error", "message": "Room not found"}, 404
 
-            self.mycursor.execute('SELECT studentName FROM students WHERE studentID = %s', (student_id,))
+            self.mycursor.execute('SELECT navn FROM Students WHERE studentID = %s', (student_id,))
             student_name = self.mycursor.fetchone()
 
             if not student_name:
                 return{"status": "error", "message": "Student not found"}, 404
             
-            self.mycursor.execute('INSERT INTO Checkind (studentName, roomName, studentID) VALUES (%s, %s, %s)', (student_name, room_name, student_id))
+            self.mycursor.execute('INSERT INTO Checkind (studentID, lokaleID, checkIn) VALUES (%s, %s, NOW())', (student_id, room_id))
             self.db.commit()
             return {"status": "success", "message": "Check-in successful"}, 200
         
@@ -104,17 +103,45 @@ class DataHandler:
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             self.mycursor.execute('INSERT INTO Underviser (email, password (%s, %s)', (username, hashed_password.decode('utf-8')))
             self.db.commit()
-            return {'status': 'User registrered successfully'}
+
+            return {'status': 'Create User: Success'}
+        
         except Exception as e:
             return e
 
-class SessionHandler:
-    def __init__(self, database, cursor):
-        self.db = database
-        self.mycursor = cursor
+    def create_team(self, new_team_name, meet_time):
+        try:
+            self.mycursor.execute('INSERT INTO UddannelsesHold (uddannelseNavn, tidsPunkt) VALUES (%s, %s)', (new_team_name, meet_time))
+            self.db.commit()
+            
+            return {'status': 'Create Team: Success'}
+        
+        except Exception as e:
+            return e
+        
+    def retrieve_team(self):
+        try:
+            self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold")
+            result = self.mycursor.fetchall()
+            
+            response_data = ''
+
+            if result:
+                response_data = {
+                    'status': 'Retrieved team list',
+                    'team_list': result  
+                }
+            else:
+                response_data = {
+                    'status': 'Error: Student not found'
+                }
+
+            return response_data
+        
+        except Exception as e:
+            return e
 
 data_handler = DataHandler()
-
 @app.route('/', methods=['POST'])
 def handle():
     data = request.json
@@ -164,12 +191,27 @@ def handle():
             result = data_handler.profile(student_id)
             return jsonify(result), 200
         
-        case 'register':
+        case 'create user request':
             username = data.get('user')
             password = data.get('pass')
 
             if not username or not password:
-                return jsonify("No 'user' or 'pass' specified in Json data"), 400
+                return jsonify("No 'user' or 'pass' specified in JSON data"), 400
+            
+            result = data_handler.register_user(username, password)
+            return jsonify(result), 200
+
+        case 'create team request':
+            team_name = data.get('team_name')
+            team_meet_time = data.get('team_meet')
+
+            result = data_handler.create_team(team_name, team_meet_time)
+            return jsonify(result), 200
+
+        case 'request teams':
+            result = data_handler.retrieve_team()
+            return jsonify(result), 200
+
         case _:
             return jsonify(error=f"Data '{subject}' not supported."), 400
         
