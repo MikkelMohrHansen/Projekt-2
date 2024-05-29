@@ -18,19 +18,19 @@ class DataHandler:
 
     def check_in(self, room_id=None, student_id=None):
         try:
-            self.mycursor.execute('SELECT roomName FROM rooms WHERE roomID = %s', (room_id,))
+            self.mycursor.execute('SELECT lokaleNavn FROM Lokaler WHERE lokaleID = %s', (room_id,))
             room_name = self.mycursor.fetchone()
 
             if not room_name:
                 return {"status": "error", "message": "Room not found"}, 404
 
-            self.mycursor.execute('SELECT studentName FROM students WHERE studentID = %s', (student_id,))
+            self.mycursor.execute('SELECT navn FROM Students WHERE studentID = %s', (student_id,))
             student_name = self.mycursor.fetchone()
 
             if not student_name:
                 return{"status": "error", "message": "Student not found"}, 404
             
-            self.mycursor.execute('INSERT INTO Checkind (studentName, roomName, studentID) VALUES (%s, %s, %s)', (student_name, room_name, student_id))
+            self.mycursor.execute('INSERT INTO Checkind (studentID, lokaleID, checkIn) VALUES (%s, %s, NOW())', (student_id, room_id))
             self.db.commit()
             return {"status": "success", "message": "Check-in successful"}, 200
         
