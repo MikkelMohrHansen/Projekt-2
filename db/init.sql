@@ -13,6 +13,7 @@ CREATE TABLE Students(
     navn varchar(255) NOT NULL,
     uddannelseID int,
     opstartsDato DATE,
+    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (studentID),
     FOREIGN KEY (uddannelseID) REFERENCES UddannelsesHold(uddannelseID)
 );
