@@ -62,7 +62,7 @@ function sendData() {
             document.getElementById('inputbox_deviceid').classList.add('error');
             document.getElementById('inputbox_password').classList.add('error');
 
-            responseStatusText.textContent = "Du har indstastet et ugyldigt brugernavn eller kodeord";
+            responseStatusText.textContent = "Du har indtastet et ugyldigt brugernavn eller kodeord";
 
             throw new Error("HTTP error; 401 Unauthorized; Invalid credentials");
         } else {

@@ -56,6 +56,5 @@ function request_teams() {
     })
     .catch(error => {
         console.error('Error:', error);
-        window.location.href = '/login';
     });
 }

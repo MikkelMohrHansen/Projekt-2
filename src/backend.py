@@ -118,7 +118,20 @@ class DataHandler:
         
         except Exception as e:
             return e
+
+    def create_student(self, student_name, student_team, student_startdate):
+        try:
+            self.mycursor.execute("SELECT uddannelseID FROM UddannelsesHold WHERE uddannelseNavn = %s", (student_team,))
+            uddannelse_id = self.mycursor.fetchone()['uddannelseID']
+
+            self.mycursor.execute('INSERT INTO Students (navn, uddannelseID, opstartsDato) VALUES (%s, %s, %s)', (student_name, uddannelse_id, student_startdate))
+            self.db.commit()
+            
+            return {'status': 'Create student: Success'}
         
+        except Exception as e:
+            return e
+
     def retrieve_team(self):
         try:
             self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold")
@@ -130,6 +143,28 @@ class DataHandler:
                 response_data = {
                     'status': 'Retrieved team list',
                     'team_list': result  
+                }
+            else:
+                response_data = {
+                    'status': 'Error: team not found'
+                }
+
+            return response_data
+        
+        except Exception as e:
+            return e
+        
+    def retrieve_students(self):
+        try:
+            self.mycursor.execute("SELECT navn, uddannelseID, opstartsDato FROM Students")
+            result = self.mycursor.fetchall()
+            
+            response_data = ''
+
+            if result:
+                response_data = {
+                    'status': 'Retrieved student list',
+                    'student_list': result  
                 }
             else:
                 response_data = {
@@ -208,8 +243,20 @@ def handle():
             result = data_handler.create_team(team_name, team_meet_time)
             return jsonify(result), 200
 
+        case 'create student request':
+            student_name = data.get('student_name')
+            student_team = data.get('student_team')
+            student_start = data.get('student_start')
+
+            result = data_handler.create_student(student_name, student_team, student_start)
+            return jsonify(result), 200
+
         case 'request teams':
             result = data_handler.retrieve_team()
+            return jsonify(result), 200
+        
+        case 'request students':
+            result = data_handler.retrieve_students()
             return jsonify(result), 200
 
         case _:
