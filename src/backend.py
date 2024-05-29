@@ -148,20 +148,14 @@ class DataHandler:
         try:
             self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold")
             result = self.mycursor.fetchall()
-            
-            response_data = ''
 
             if result:
-                response_data = {
+                return {
                     'status': 'Retrieved team list',
                     'team_list': result  
                 }
             else:
-                response_data = {
-                    'status': 'Error: team not found'
-                }
-
-            return response_data
+                return {'status': 'Error: team not found'}
         
         except Exception as e:
             return e
@@ -174,20 +168,14 @@ class DataHandler:
             LEFT JOIN UddannelsesHold ON Students.uddannelseID = UddannelsesHold.uddannelseID
             """)
             result = self.mycursor.fetchall()
-            
-            response_data = ''
 
             if result:
-                response_data = {
+                return {
                     'status': 'Retrieved student list',
                     'student_list': result  
                 }
             else:
-                response_data = {
-                    'status': 'Error: Student not found'
-                }
-
-            return response_data
+                return {'status': 'Error: Student not found'}
         
         except Exception as e:
             return e

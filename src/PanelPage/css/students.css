@@ -115,6 +115,24 @@
     color: #8c1414;
 }
 
+#search-results-uddannelse {
+    position: absolute;
+    background-color: white;
+    width: 20vw; 
+    max-height: 200px; 
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+#search-results-uddannelse div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#search-results div:hover {
+    background-color: #f0f0f0;
+}
+
 #content-wnd {
     display: flex;
     flex-direction: column;

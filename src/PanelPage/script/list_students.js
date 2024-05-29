@@ -37,7 +37,7 @@ function request_student() {
 
                 const studentLabel = document.createElement('label');
                 studentLabel.id = `student-${index + 1}-title`;
-                studentLabel.textContent = student.student_name;
+                studentLabel.textContent = student.navn;
 
                 const studentCheckbox = document.createElement('input');
                 studentCheckbox.type = 'checkbox';
@@ -48,12 +48,12 @@ function request_student() {
                 const studentTeam = document.createElement('p');
                 studentTeam.id = `student-${index + 1}-team`;
                 studentTeam.className = `student-info`;
-                studentTeam.textContent = student.student_team;
+                studentTeam.textContent = student.uddannelseNavn;
 
                 const studentStartdate = document.createElement('p');
                 studentStartdate.id = `student-${index + 1}-startdate`;
                 studentStartdate.className = `student-info`;
-                studentStartdate.textContent = student.student_startdate;
+                studentStartdate.textContent = student.opstartsDato;
 
                 studentDiv.appendChild(studentLabel);
                 studentDiv.appendChild(studentCheckbox);
