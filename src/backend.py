@@ -43,18 +43,10 @@ class DataHandler:
             self.mycursor.execute('SELECT email, password FROM Underviser WHERE (email, password) = (%s, %s)', (username, password))
             result = self.mycursor.fetchone()
 
-            response_data = ''
-
             if result and bcrypt.checkpw(password.encode('utf-8'), result['password'].encode('utf-8')):
-                response_data = {
-                    'status': 'Login: Credentials accepted'
-                }
+                return {'status': 'Login: Credentials accepted'}
             else:
-                response_data = {
-                    'status': 'Error: Invalid credentials'
-                }
-
-            return response_data
+                return {'status': 'Error: Invalid credentials'}
             
         except Exception as e:
             return e
@@ -63,6 +55,17 @@ class DataHandler:
         try:
             search_term = f"%{query}%"
             self.mycursor.execute("SELECT studentID, navn FROM Students WHERE navn LIKE %s", (search_term,))
+            result = self.mycursor.fetchall()
+
+            return result
+            
+        except Exception as e:
+            return e
+
+    def search_uddannelse(self, query):
+        try:
+            search_term = f"%{query}%"
+            self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold WHERE navn LIKE %s", (search_term,))
             result = self.mycursor.fetchall()
 
             return result
@@ -81,19 +84,13 @@ class DataHandler:
             self.mycursor.execute("SELECT navn FROM Students WHERE studentID = %s", (id,))
             student_info = self.mycursor.fetchone()['navn']
 
-            response_data = ''
-
             if uddannelse_navn and student_info:
-                response_data = {
+                return {
                     'navn': student_info,
                     'uddannelseNavn': uddannelse_navn  
                 }
             else:
-                response_data = {
-                    'status': 'Error: Student not found'
-                }
-
-            return response_data
+                return {'status': 'Error: Student not found'}
 
         except Exception as e:
             return e
@@ -132,6 +129,21 @@ class DataHandler:
         except Exception as e:
             return e
 
+    def delete_students(self, students):
+        try:
+            placeholders = ', '.join(['%s'] * len(students))
+            query = f"DELETE FROM Students WHERE navn IN ({placeholders})"
+            self.mycursor.execute(query, students)
+            self.db.commit()
+
+            if self.mycursor.rowcount > 0:
+                return {'status': 'Students deleted'}
+            else:
+                return {'status': 'Error: No students deleted'}
+
+        except Exception as e:
+            return {'status': 'Error', 'message': str(e)}
+
     def retrieve_team(self):
         try:
             self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold")
@@ -156,7 +168,11 @@ class DataHandler:
         
     def retrieve_students(self):
         try:
-            self.mycursor.execute("SELECT navn, uddannelseID, opstartsDato FROM Students")
+            self.mycursor.execute("""
+            SELECT Students.navn, UddannelsesHold.uddannelseNavn, Students.opstartsDato
+            FROM Students
+            LEFT JOIN UddannelsesHold ON Students.uddannelseID = UddannelsesHold.uddannelseID
+            """)
             result = self.mycursor.fetchall()
             
             response_data = ''
@@ -217,6 +233,15 @@ def handle():
             result = data_handler.search(query)
             return jsonify(result), 200
         
+        case 'search uddannelse':
+            query = data.get('search', '')
+
+            if not query:
+                return jsonify([])
+
+            result = data_handler.search_uddannelse(query)
+            return jsonify(result), 200
+        
         case 'profile':
             student_id = data.get('id')
 
@@ -249,6 +274,12 @@ def handle():
             student_start = data.get('student_start')
 
             result = data_handler.create_student(student_name, student_team, student_start)
+            return jsonify(result), 200
+
+        case 'delete students':
+            students = data.get('students')
+
+            result = data_handler.delete_students(students)
             return jsonify(result), 200
 
         case 'request teams':

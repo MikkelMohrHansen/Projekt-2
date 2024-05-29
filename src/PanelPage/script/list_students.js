@@ -47,8 +47,8 @@ function request_student() {
 
                 const studentTeam = document.createElement('p');
                 studentTeam.id = `student-${index + 1}-team`;
-                studentStartdate.className = `student-info`;
-                studentLabel.textContent = student.student_team;
+                studentTeam.className = `student-info`;
+                studentTeam.textContent = student.student_team;
 
                 const studentStartdate = document.createElement('p');
                 studentStartdate.id = `student-${index + 1}-startdate`;
@@ -57,11 +57,10 @@ function request_student() {
 
                 studentDiv.appendChild(studentLabel);
                 studentDiv.appendChild(studentCheckbox);
-                studentDiv.appendChild(studentCheckbox);
                 studentDiv.appendChild(studentTeam);
                 studentDiv.appendChild(studentStartdate);
 
-                studentContent.appendChild(teamDiv);
+                studentContent.appendChild(studentDiv);
             });
         } else {
             console.error('Error:', data.status);
