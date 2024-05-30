@@ -6,7 +6,7 @@ function getData() {
 
     var senddata = {
         data: 'session get data',
-        student_id: studentId
+        id: studentId
     };
 
     fetch('https://79.171.148.163/api', {

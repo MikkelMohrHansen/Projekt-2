@@ -292,7 +292,7 @@ def handle():
             return jsonify(result), 200
 
         case 'session get data':
-            student_name = data.get('student_id')
+            student_id = data.get('id')
             result = data_handler.get_student_checkin(student_id)
             return jsonify(result), 200
 
