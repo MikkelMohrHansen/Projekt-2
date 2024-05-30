@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="css/student.css" type="text/css"/>
         <link rel="stylesheet" href="css/shared.css" type="text/css"/>
         <link rel="stylesheet" href="css/search.css" type="text/css"/>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
         <div id="top-bar">
@@ -68,9 +69,17 @@
                 <p id="teacher-2">Frank Poulsen</p>
             </div>
         </div>
+        <div id="activity-wnd">
+            <h2>Activity <span class="time-period">(24h)</span></h2>
+            <div>
+                <canvas id="activity-chart"></canvas>
+            </div>
+        </div>
         <script src="script/search.js"></script>
-        <script src="script/profile.js"></script>
         <script src="script/dropdown.js"></script>
         <script src="script/dropdown_options.js"></script>
+        <script src="script/profile.js"></script>
+        <script src="script/get_data.js"></script>
+        <script src="script/graph.js"></script>
     </body>
 </html>

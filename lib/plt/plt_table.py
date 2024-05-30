@@ -6,7 +6,7 @@ mydb = mysql.connector.connect(
                                 host="localhost",
                                 port="3306",   
                                 user="user", 
-                                password="MaaGodt*7913!", 
+                                password="PASSWORD", 
                                 database="LogunitDB")
 
 mycursor = mydb.cursor()

@@ -57,7 +57,7 @@ function createStudent() {
         confirmationText.textContent = "";
     }
 
-    if (s_navn.trim() === '' || s_team.trim() === '' || s_date.trim() === '') {
+    if (s_name.trim() === '' || s_team.trim() === '' || s_date.trim() === '') {
         console.log('[!] Inputboxes are empty, aborting...');
         return;
     }

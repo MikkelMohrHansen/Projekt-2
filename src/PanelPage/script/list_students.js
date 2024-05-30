@@ -45,6 +45,11 @@ function request_student() {
                 studentCheckbox.name = 'student-checked';
                 studentCheckbox.style.marginTop = '10px';
 
+                const studentID = document.createElement('p');
+                studentID.id = `student-${index + 1}-studentID`;
+                studentID.className = `student-info`;
+                studentID.textContent = student.studentID;
+
                 const studentTeam = document.createElement('p');
                 studentTeam.id = `student-${index + 1}-team`;
                 studentTeam.className = `student-info`;
@@ -55,8 +60,10 @@ function request_student() {
                 studentStartdate.className = `student-info`;
                 studentStartdate.textContent = student.opstartsDato;
 
+
                 studentDiv.appendChild(studentLabel);
                 studentDiv.appendChild(studentCheckbox);
+                studentDiv.appendChild(studentID);
                 studentDiv.appendChild(studentTeam);
                 studentDiv.appendChild(studentStartdate);
 
