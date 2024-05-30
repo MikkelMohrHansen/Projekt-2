@@ -1,33 +1,55 @@
-// Data til grafen
-var data = {
-    labels: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"],
-    datasets: [] 
-};
+// Data til grafen (1=kommet, 0=ikke kommet)
+var months = ["JAN", "FEB", "MAR", "APR", "MAJ", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"];
+var attendance = new Array(months.length).fill(0); // Initialize attendance array with zeros for all months
+
+// Beregn månedlig gennemsnitlig check-in procentdel for hver måned
+var monthlyAverages = attendance.map(month => 0); // Initialize monthly averages array with zeros for all months
+
+// Function to update attendance based on check-in data
+function updateAttendance(checkInData) {
+    checkInData.forEach(entry => {
+        const date = new Date(entry.checkIn);
+        const monthIndex = date.getMonth(); // Get month index (0-11)
+        attendance[monthIndex] = 1; // Mark check-in for this month
+    });
+
+    // Recalculate monthly averages
+    monthlyAverages = attendance.map((month, index) => {
+        const totalDays = new Date(new Date().getFullYear(), index + 1, 0).getDate(); // Get total days in month
+        const attendedDays = month;
+        return (attendedDays / totalDays) * 100;
+    });
+}
+
+// Function to filter data for a specific month
+function filterDataForMonth(monthIndex) {
+    return attendance[monthIndex];
+}
 
 // Indstillinger for grafen
 var options = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
+        y: {
+            beginAtZero: true,
+            max: 100,
+            title: {
+                display: true,
+                text: 'Procent (%)'
+            }
+        },
         x: {
             title: {
                 display: true,
-                text: 'Timer'
-            },
-            beginAtZero: true
-        },
-        y: {
-            title: {
-                display: true,
-                text: 'Fremmødeprocent'
-            },
-            beginAtZero: true
+                text: 'Måneder'
+            }
         }
     }
 };
 
 // Hent canvas og opret grafen
-var ctx = document.getElementById('activity-chart').getContext('2d');
+var ctx = document.getElementById('myLineChart').getContext('2d');
 var myLineChart = new Chart(ctx, {
     type: 'line',
     data: data,
@@ -39,25 +61,11 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-document.addEventListener('updateGraph', function (event) {
-    // Get existing datasets
-    var datasets = myLineChart.data.datasets || [];
+document.addEventListener('updateGraph', function(event) {
+    const { student_data } = event.detail;
 
-    // Opdater dataset med det modtaget info
-    const { student_id, student_data } = event.detail;
-    
-    const randomRed = getRandomInt(0, 255);
-    const randomGreen = getRandomInt(0, 255);
-    const randomBlue = getRandomInt(0, 255);
+    // Update attendance based on received student data
+    updateAttendance(student_data);
 
-    datasets.push({
-        label: student_id,
-        fill: false,
-        borderColor: `rgb(${randomRed}, ${randomGreen}, ${randomBlue})`,
-        data: student_data || []
-    });
-
-    myLineChart.data.datasets = datasets;
-
-    myLineChart.update();
+    // Update the data object and then call myLineChart.update() to refresh the chart
 });

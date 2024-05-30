@@ -33,7 +33,7 @@ function getData() {
             // 'student' i URL
             if (window.location.href.indexOf("student?id=",studentId) > -1) {
                 // Grab recording data for activity graph
-                const event = new CustomEvent('updateGraph', { detail: {studentId, student_data: StudentData } });
+                const event = new CustomEvent('updateGraph', { detail: { student_data: StudentData } });
                 document.dispatchEvent(event);
             }
 
