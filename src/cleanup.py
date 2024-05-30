@@ -6,26 +6,21 @@ import bcrypt
 def delete_old_students():
     # Connect to the database
     db = mysql.connect(
-    host="172.17.0.2",
+    host="79.171.148.163",
     user="user",
     passwd="MaaGodt*7913!",
     database="LogunitDB"
     )
     cursor = db.cursor()
-
-    # Calculate the date three years ago from today
-    three_years_ago = datetime.now() - timedelta(days=3*365)
-
-    # Delete students who were added more than three years ago
-    delete_query = "DELETE FROM Students WHERE created_at < %s"
-    cursor.execute(delete_query, (three_years_ago,))
-
-    # Commit the transaction
-    conn.commit()
-
-    # Close the connection
-    cursor.close()
-    conn.close()
-
+    six_months = datetime.now() - timedelta(days=180)
+    query = "SELECT id, slutDato FROM Students WHERE slutDato <= %s"
+    cursor.execute(query, (six_months,))
+    old_students = cursor.fetchall()
+    for student_id, _ in old_students:
+        delete_query = "DELETE FROM Students WHERE id = %s"
+        cursor.execute(delete_query, (student_id,))
+        db.commit()
+    db.close()
 if __name__ == "__main__":
     delete_old_students()
+

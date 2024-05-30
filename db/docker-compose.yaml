@@ -10,8 +10,8 @@ services:
     env_file:
       - .env
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./init.sql:/data/application/init.sql
-    
 
   phpmyadmin:
     container_name: "phpmyadmin"
@@ -20,4 +20,8 @@ services:
       - 8080:80
     environment:
       - PMA_ARBITRARY=1
+
+volumes:
+  mysql_data:
+
 
