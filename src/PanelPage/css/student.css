@@ -58,3 +58,22 @@
 #school-team {
     padding-left: 20px;
 }
+
+#activity-wnd {
+    width: 82vW;
+    height: 40vH;
+
+    margin: 20px;
+
+    background-color: #ffffff;
+}
+
+#activity-wnd .time-period {
+    font-weight: 100;
+}
+
+#activity-chart {
+    width: 100% !important;
+    height: 220px !important;
+}
+

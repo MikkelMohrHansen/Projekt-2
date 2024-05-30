@@ -65,7 +65,7 @@ class DataHandler:
     def search_uddannelse(self, query):
         try:
             search_term = f"%{query}%"
-            self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold WHERE navn LIKE %s", (search_term,))
+            self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold WHERE uddannelseNavn LIKE %s", (search_term,))
             result = self.mycursor.fetchall()
 
             return result
@@ -163,7 +163,7 @@ class DataHandler:
     def retrieve_students(self):
         try:
             self.mycursor.execute("""
-            SELECT Students.navn, UddannelsesHold.uddannelseNavn, Students.opstartsDato
+            SELECT Students.navn, Students.studentID, UddannelsesHold.uddannelseNavn, Students.opstartsDato
             FROM Students
             LEFT JOIN UddannelsesHold ON Students.uddannelseID = UddannelsesHold.uddannelseID
             """)
@@ -179,6 +179,20 @@ class DataHandler:
         
         except Exception as e:
             return e
+
+    def get_student_checkin(self, student_id):
+        self.mycursor.execute("SELECT checkIn FROM Checkind WHERE studentID = %s", (student_id,))
+        result = self.mycursor.fetchall()
+
+        if result:
+            return {
+                'status': 'Session: data update',
+                'student_data': result
+            }
+        else:
+            return {'status': 'Checkin data not found'}
+
+
 
 data_handler = DataHandler()
 @app.route('/', methods=['POST'])
@@ -216,7 +230,6 @@ def handle():
 
             if not query:
                 return jsonify([])
-
 
             result = data_handler.search(query)
             return jsonify(result), 200
@@ -276,6 +289,11 @@ def handle():
         
         case 'request students':
             result = data_handler.retrieve_students()
+            return jsonify(result), 200
+
+        case 'session get data':
+            student_name = data.get('student_id')
+            result = data_handler.get_student_checkin(student_id)
             return jsonify(result), 200
 
         case _:
