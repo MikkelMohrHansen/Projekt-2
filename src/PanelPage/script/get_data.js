@@ -26,14 +26,13 @@ function getData() {
     .then(data => {
         console.log('Response from server:', data);
 
-        const correctedStudentData = data.checkIn.replace(/'/g, '"');
-        const StudentData = JSON.parse(correctedStudentData);
+        const StudentData = data.student_data;
 
         try {
             // 'student' i URL
-            if (window.location.href.indexOf("student?id=",studentId) > -1) {
+            if (window.location.href.indexOf("student") > -1) {
                 // Grab recording data for activity graph
-                const event = new CustomEvent('updateGraph', { detail: { student_data: StudentData } });
+                const event = new CustomEvent('updateGraph', { detail: { student_id: studentId, student_data: StudentData } });
                 document.dispatchEvent(event);
             }
 

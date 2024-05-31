@@ -60,20 +60,14 @@
 }
 
 #activity-wnd {
-    width: 82vW;
-    height: 40vH;
+    width: 400px;
+    height: 100px;
 
-    margin: 20px;
+    margin-left: 5px;
 
     background-color: #ffffff;
 }
 
-#activity-wnd .time-period {
-    font-weight: 100;
+.time-period {
+   font-weight: 100;
 }
-
-#activity-chart {
-    width: 100% !important;
-    height: 220px !important;
-}
-

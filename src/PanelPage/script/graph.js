@@ -1,71 +1,90 @@
-// Data til grafen (1=kommet, 0=ikke kommet)
-var months = ["JAN", "FEB", "MAR", "APR", "MAJ", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"];
-var attendance = new Array(months.length).fill(0); // Initialize attendance array with zeros for all months
-
-// Beregn månedlig gennemsnitlig check-in procentdel for hver måned
-var monthlyAverages = attendance.map(month => 0); // Initialize monthly averages array with zeros for all months
-
-// Function to update attendance based on check-in data
-function updateAttendance(checkInData) {
-    checkInData.forEach(entry => {
-        const date = new Date(entry.checkIn);
-        const monthIndex = date.getMonth(); // Get month index (0-11)
-        attendance[monthIndex] = 1; // Mark check-in for this month
-    });
-
-    // Recalculate monthly averages
-    monthlyAverages = attendance.map((month, index) => {
-        const totalDays = new Date(new Date().getFullYear(), index + 1, 0).getDate(); // Get total days in month
-        const attendedDays = month;
-        return (attendedDays / totalDays) * 100;
-    });
-}
-
-// Function to filter data for a specific month
-function filterDataForMonth(monthIndex) {
-    return attendance[monthIndex];
-}
-
-// Indstillinger for grafen
-var options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-        y: {
-            beginAtZero: true,
-            max: 100,
-            title: {
-                display: true,
-                text: 'Procent (%)'
-            }
+document.addEventListener('DOMContentLoaded', (event) => {
+    const ctx = document.getElementById('activity-chart').getContext('2d');
+    const myLineChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ["JAN", "FEB", "MAR", "APR", "MAJ", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"],
+            datasets: [{
+                label: 'Attendance Percentage',
+                data: [],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                fill: true,
+            }]
         },
-        x: {
-            title: {
-                display: true,
-                text: 'Måneder'
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            },
+            maintainAspectRatio: false, // Allow chart to adjust to its container size
+            responsive: true, // Make the chart responsive
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.raw.toFixed(2) + '%';
+                        }
+                    }
+                }
             }
         }
+    });
+
+    document.addEventListener('updateGraph', function(event) {
+        console.log('Received event:', event);
+        const { student_id, student_data } = event.detail;
+
+        if (!student_data) {
+            console.error('Invalid check-in data format:', student_data);
+            return;
+        }
+
+        // Process the student_data to update the graph
+        updateAttendance(student_data, myLineChart);
+    });
+
+    function updateAttendance(checkInData, chart) {
+        console.log('Processing check-in data:', checkInData);
+
+        if (!Array.isArray(checkInData)) {
+            console.error('Invalid check-in data format:', checkInData);
+            return;
+        }
+
+        // Initialize attendance array with 0s for each month
+        let attendance = new Array(12).fill(0);
+        let daysInMonth = new Array(12).fill(0);
+
+        // Update attendance based on checkInData
+        checkInData.forEach(checkIn => {
+            let checkInDate = new Date(checkIn.checkIn);
+            let monthIndex = checkInDate.getMonth();
+            attendance[monthIndex] += 1;
+            daysInMonth[monthIndex] = Math.max(daysInMonth[monthIndex], checkInDate.getDate());
+        });
+
+        // Calculate attendance percentage
+        let attendancePercentage = attendance.map((count, index) => {
+            return daysInMonth[index] > 0 ? (count / daysInMonth[index]) * 100 : 0;
+        });
+
+        console.log('Attendance percentage:', attendancePercentage);
+
+        // Update chart data
+        chart.data.datasets[0].data = attendancePercentage;
+        chart.update();
     }
-};
-
-// Hent canvas og opret grafen
-var ctx = document.getElementById('myLineChart').getContext('2d');
-var myLineChart = new Chart(ctx, {
-    type: 'line',
-    data: data,
-    options: options
 });
 
-// Random int generator vi bruger til RGB randomizer
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-document.addEventListener('updateGraph', function(event) {
-    const { student_data } = event.detail;
-
-    // Update attendance based on received student data
-    updateAttendance(student_data);
-
-    // Update the data object and then call myLineChart.update() to refresh the chart
-});
