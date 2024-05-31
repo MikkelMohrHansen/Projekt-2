@@ -24,11 +24,11 @@ body {
     margin-right: auto;
 }
 
-#refresh-btn {
+#bug-btn {
     margin-left: auto;
 }
 
-#refresh-btn, #settings-btn, #user-acc-logo {
+#bug-btn, #settings-btn, #user-acc-logo {
     margin-right: 5px;
 }
 
@@ -36,7 +36,7 @@ body {
     padding-right: 10px;
 }
 
-#refresh-btn:hover, #settings-btn:hover, #user-acc-logo:hover {
+bug-btn:hover, #settings-btn:hover, #user-acc-logo:hover {
     cursor: pointer;
 }
 
