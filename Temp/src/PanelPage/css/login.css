@@ -1,0 +1,138 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.login-container {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+input[type="email"], input[type="password"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#email.error,
+#password.error {
+    border: 1px solid #8c1414;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #0056b3;
+}
+
+.link-text {
+    text-decoration: none;
+    color: #6595dc;
+    font-weight: bold;
+}
+
+.link-text:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.bar {
+    width: 30px;
+    height: 5px;
+    background-color: #333;
+    margin: 6px 0;
+}
+
+.bar:nth-child(1) {
+    transform: rotate(45deg) translate(7.3px, 0px);
+}
+
+.bar:nth-child(2) {
+    transform: rotate(-45deg) translate(7.3px, 0px);
+}
+
+#create_open {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+    text-align: left;
+    z-index: 2;
+}
+
+#create_open h2 {
+    margin-bottom: 10px;
+
+}
+
+#close_btn_create {
+    cursor: pointer;
+    display: inline-block;
+}
+
+#create_open input[type="text"],
+#create_open input[type="password"] {
+    width: 15vW;
+    font-size: 20px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 3px solid #cecece;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+    border-radius: 15px;
+    color: #525252;
+}
+
+#create_open input[type="text"]:focus,
+#create_open input[type="password"]:focus {
+    border: 3px solid #525252;
+    color: #525252;
+}
+
+#inputbox_new_email.error,
+#inputbox_new_kodeord.error {
+    border: 3px solid #8c1414;
+}
+
+#create-submit-btn {
+    margin-left: 5px;
+    color: #6595dc;
+}
+
+#create-submit-btn:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#confirmation-field {
+    margin: 0;
+    color: #525252;
+}
+
+#confirmation-field.error {
+    margin: 0;
+    color: #8c1414;
+}

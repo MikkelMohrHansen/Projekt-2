@@ -1,0 +1,19 @@
+#search-results {
+    position: absolute;
+    background-color: white;
+    width: 15vw;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    border-radius: 5px;
+}
+
+#search-results div {
+    font-size: 20px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#search-results div:hover {
+    background-color: #f0f0f0;
+}

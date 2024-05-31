@@ -1,0 +1,73 @@
+#bar-2 p {
+    margin: 2px;
+}
+
+#bar-2:hover {
+    cursor: pointer;
+}
+
+#bar-2 {
+    background-color: lightgrey;
+    border-radius: 5px;
+    margin: 0;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* Content window styles (adjust as needed) */
+#content-wnd {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+#information {
+    border: 3px dotted black;
+    flex: 1 1 50%;
+    order: 1;
+    box-sizing: border-box;
+    margin-right: 5px;
+}
+
+#information h1, 
+#information h3 {
+    margin-left: 10px;
+}
+
+#statistics {
+    border: 3px dotted black;
+    flex: 1 1 45%;
+    order: 2;
+    box-sizing: border-box;
+    text-align: center;
+    margin-left: 5px;
+}
+
+#teachers {
+    border: 3px dotted black;
+    width: 100%;
+    order: 3;
+    margin-top: 20px;
+}
+
+#teachers h2, 
+#teachers p {
+    margin-left: 10px;
+}
+
+#school-team {
+    padding-left: 20px;
+}
+
+#activity-wnd {
+    width: 400px;
+    height: 100px;
+
+    margin-left: 5px;
+
+    background-color: #ffffff;
+}
+
+.time-period {
+   font-weight: 100;
+}

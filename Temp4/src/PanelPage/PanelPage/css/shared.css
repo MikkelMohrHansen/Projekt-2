@@ -1,0 +1,145 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    background-color: #fbfbfd;
+
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #525252;
+    font-size: 15px;
+}
+
+#top-bar {
+    background-color: #444444;
+    height: 50px;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#logo-home {
+    margin-right: auto;
+}
+
+#refresh-btn {
+    margin-left: auto;
+}
+
+#refresh-btn, #settings-btn, #user-acc-logo {
+    margin-right: 5px;
+}
+
+#user-acc-logo {
+    padding-right: 10px;
+}
+
+#refresh-btn:hover, #settings-btn:hover, #user-acc-logo:hover {
+    cursor: pointer;
+}
+
+#search-timelogger-container {
+    padding-left: 25px;
+}
+
+#inputbox_searchtimelogger {
+    padding-left: 5px;
+    position: relative;
+    width: 15vW;
+    font-size: 15px;
+    color: 525252; 
+    box-sizing: border-box;
+    border: 3px solid #F5F5F5;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+    border-radius: 15px;
+    margin: 0 auto;
+}
+
+#inputbox_searchtimelogger:focus {
+    border: 3px solid #cecece;
+}
+
+
+#search-icon {
+    height: 20px; /* Set your search icon height */
+}
+
+#refresh-btn, #settings-btn, #user-acc-logo {
+    height: 30px; /* Set your icon height */
+}
+
+/* Middle bar styles */
+#middle-bar {
+    background-color: #F5F5F5;
+    height: 50px;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+.dropdown {
+    position: relative;
+    padding-left: 5px;
+}
+
+.dropdown button:hover {
+    cursor: pointer;
+}
+
+.bar {
+    width: 25px;
+    height: 3px;
+    background-color: #444444;
+    margin: 4px 0;
+}
+
+#options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    padding: 10px;
+    display: none;
+}
+
+#options.active {
+    display: block;
+}
+
+#teams:hover, #students:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* Location path styles */
+#location-path {
+    display: flex;
+    align-items: center;
+
+    padding-left: 5px;
+
+    font-size: 10px;
+}
+
+#bar-1 {
+    background-color: lightblue;
+    border-radius: 5px;
+    margin: 0;
+    padding-left: 2px;
+    padding-right: 2px;
+
+    margin-right: 2px;
+}
+
+#bar-1 p {
+    margin: 2px;
+}
+
+#bar-1:hover {
+    cursor: pointer;
+}

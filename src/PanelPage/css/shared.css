@@ -25,6 +25,8 @@ body {
 }
 
 #bug-btn {
+    width: 30px;
+    height: 30px;
     margin-left: auto;
 }
 
@@ -36,7 +38,7 @@ body {
     padding-right: 10px;
 }
 
-bug-btn:hover, #settings-btn:hover, #user-acc-logo:hover {
+#bug-btn:hover, #settings-btn:hover, #user-acc-logo:hover {
     cursor: pointer;
 }
 

@@ -1,0 +1,31 @@
+function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const studentId = getQueryParam('id');
+    
+    var senddata = {
+        data: 'profile',
+        id: studentId
+    };
+
+    if (studentId) {
+        fetch('https://79.171.148.163/api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(senddata)
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('name').textContent = data.navn;
+            document.getElementById('school-team').textContent = data.uddannelseNavn;
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+        document.getElementById('name').textContent = 'Student ID not found';
+    }
+});

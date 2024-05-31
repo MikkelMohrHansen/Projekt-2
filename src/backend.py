@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect, url_for
+from flask import Flask, request, jsonify
 import mysql.connector as mysql
 import bcrypt
 
@@ -34,9 +34,9 @@ class DataHandler:
             self.db.commit()
             return {"status": "success", "message": "Check-in successful"}, 200
         
-        except Exception as e:
+        except Exception:
             self.db.rollback()
-            return {"status": "error", "message": str(e)}, 500
+            return {'status': 'Error during check-in'}
         
     def login_procedure(self, username, password):
         try:
@@ -48,8 +48,8 @@ class DataHandler:
             else:
                 return {'status': 'Error: Invalid credentials'}
             
-        except Exception as e:
-            return e
+        except Exception:
+            return {'status': 'Error during handeling of login procedure'}
 
     def search(self, query):
         try:
@@ -59,8 +59,8 @@ class DataHandler:
 
             return result
             
-        except Exception as e:
-            return e
+        except Exception:
+            return {'status': 'Error during search'}
 
     def search_uddannelse(self, query):
         try:
@@ -70,8 +70,8 @@ class DataHandler:
 
             return result
             
-        except Exception as e:
-            return e
+        except Exception:
+            return {'status': 'Error searching for team'}
 
     def profile(self, id):
         try:
@@ -90,10 +90,10 @@ class DataHandler:
                     'uddannelseNavn': uddannelse_navn  
                 }
             else:
-                return {'status': 'Error: Student not found'}
+                return {'status': 'Error loading profile'}
 
-        except Exception as e:
-            return e
+        except Exception:
+            return {'status': 'Error registering user'}
     
     def register_user(self, username, password):
         try:
@@ -103,8 +103,8 @@ class DataHandler:
 
             return {'status': 'Create User: Success'}
         
-        except Exception as e:
-            return e
+        except Exception:
+            return {'status': 'Error registering user'}
 
     def create_team(self, new_team_name, meet_time):
         try:
@@ -113,8 +113,8 @@ class DataHandler:
             
             return {'status': 'Create Team: Success'}
         
-        except Exception as e:
-            return e
+        except Exception:
+            return {'status': 'Error creating team'}
 
     def create_student(self, student_name, student_team, student_startdate):
         try:
@@ -126,8 +126,8 @@ class DataHandler:
             
             return {'status': 'Create student: Success'}
         
-        except Exception as e:
-            return e
+        except Exception:
+            return {'status': 'Error creating student'}
 
     def delete_students(self, students):
         try:
@@ -141,8 +141,8 @@ class DataHandler:
             else:
                 return {'status': 'Error: No students deleted'}
 
-        except Exception as e:
-            return {'status': 'Error', 'message': str(e)}
+        except Exception:
+            return {'status':'Error deleting student'}
 
     def retrieve_team(self):
         try:
@@ -157,8 +157,8 @@ class DataHandler:
             else:
                 return {'status': 'Error: team not found'}
         
-        except Exception as e:
-            return e
+        except Exception:
+            return {'status': 'Error retrieving team'}
         
     def retrieve_students(self):
         try:
@@ -177,8 +177,8 @@ class DataHandler:
             else:
                 return {'status': 'Error: Student not found'}
         
-        except Exception as e:
-            return e
+        except Exception:
+            return {'status': 'Error retrieving students'}
 
     def get_student_checkin(self, student_id):
         self.mycursor.execute("SELECT checkIn FROM Checkind WHERE studentID = %s", (student_id,))
@@ -238,7 +238,7 @@ def handle():
             query = data.get('search', '')
 
             if not query:
-                return jsonify([])
+                return jsonify([]), 200
 
             result = data_handler.search_uddannelse(query)
             return jsonify(result), 200
@@ -247,7 +247,7 @@ def handle():
             student_id = data.get('id')
 
             if not student_id:
-                return jsonify(error="No 'studentID' specified in JSON data."), 400
+                return jsonify({'error':"No 'studentID' specified in JSON data."}), 400
 
             result = data_handler.profile(student_id)
             return jsonify(result), 200
@@ -297,7 +297,7 @@ def handle():
             return jsonify(result), 200
 
         case _:
-            return jsonify(error=f"Data '{subject}' not supported."), 400
+            return jsonify({'error':"Data 'subject' not supported."}), 400
         
 
 if __name__ == "__main__":
