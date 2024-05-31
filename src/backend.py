@@ -340,8 +340,9 @@ class DataHandler:
                     checked_in_today = student['checked_in_today']
                     break
             return {'attendance': attendance, 'checked_in_today': checked_in_today}
-        except Exception as e:
-            return e
+        
+        except Exception:
+            return {'status': 'Student average data not found'}
 
 
 

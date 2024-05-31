@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const studentId = getQueryParam('id');
     
     var senddata = {
-        data: 'session get data',
+        data: 'session get student table',
         id: studentId
     };
 
