@@ -1,34 +1,17 @@
-from flask import Flask, request, jsonify, redirect, url_for
 import mysql.connector as mysql
-import bcrypt
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 
 class StudentTable:
     def __init__(self):
         self.db = mysql.connect(
-        host="79.171.148.163",
-        user="user",
-        passwd="MaaGodt*7913!",
-        database="LogunitDB"
+            host="79.171.148.163",
+            user="user",
+            passwd="MaaGodt*7913!",
+            database="LogunitDB"
         )
         self.mycursor = self.db.cursor(dictionary=True)
+        print("Connected to database")
 
-        print("connected to database")
-        
-    def get_Students_From_Checkin(self,uddannelses_Hold_ID):
-        query = """
-        SELECT DISTINCT s.studentID, s.navn
-        FROM Checkind c
-        JOIN Students s ON c.studentID = s.studentID
-        WHERE s.uddannelseID = %s
-        """
-        self.mycursor.execute(query, (uddannelses_Hold_ID,))
-        result = self.mycursor.fetchall()
-        
-        names = [row['navn'] for row in result]
-        
-        return names
-        
     def calculate_days(self, uddannelses_Hold_ID):
         query = """
         SELECT navn, opstartsDato
@@ -75,7 +58,7 @@ class StudentTable:
 
     def amount_Of_Checkins(self, uddannelses_Hold_ID):
         query = """
-        SELECT s.navn, COUNT(c.studentID) AS antal
+        SELECT s.navn, COUNT(c.studentID) AS antal, MAX(c.checkin) AS latest_checkin
         FROM Students s
         LEFT JOIN Checkind c ON s.studentID = c.studentID
         WHERE s.uddannelseID = %s
@@ -85,7 +68,7 @@ class StudentTable:
         result = self.mycursor.fetchall()
         
         # Convert the result to the desired dictionary format
-        checkin_counts = [{'navn': row['navn'], 'antal': row['antal']} for row in result]
+        checkin_counts = [{'navn': row['navn'], 'antal': row['antal'], 'latest_checkin': row['latest_checkin']} for row in result]
         
         return checkin_counts
 
@@ -111,9 +94,9 @@ class StudentTable:
         # Get today's date
         today_date = datetime.now().date()
         
-        # Query to check if each student has checked in today
+        # Query to check if each student has checked in today and fetch the check-in time
         query = """
-        SELECT s.navn, CASE WHEN COUNT(c.checkin) > 0 THEN TRUE ELSE FALSE END AS checked_in_today
+        SELECT s.navn, MAX(c.checkin) AS checked_in_today
         FROM Students s
         LEFT JOIN Checkind c ON s.studentID = c.studentID AND DATE(c.checkin) = %s
         WHERE s.uddannelseID = %s
@@ -123,8 +106,15 @@ class StudentTable:
         self.mycursor.execute(query, (today_date, uddannelses_Hold_ID))
         result = self.mycursor.fetchall()
         
-        # Create a dictionary to store checked-in status for each student
-        checked_in_today = {entry['navn']: entry['checked_in_today'] for entry in result}
+        # Create a dictionary to store checked-in status and check-in time for each student
+        checked_in_today = {}
+        for entry in result:
+            navn = entry['navn']
+            checkin_timestamp = entry['checked_in_today']
+            checked_in_today[navn] = {
+                'checked_in_today': 1 if checkin_timestamp is not None else 0,
+                'checked_in_today_timestamp': checkin_timestamp.time() if checkin_timestamp is not None else None
+            }
         
         return checked_in_today
 
@@ -138,7 +128,7 @@ class StudentTable:
         # Calculate attendance difference percentage
         calced_attendance = self.calc_attendance(checkin_counts, days_diff_list)
         
-        # Check if students have checked in today
+        # Check if students have checked in today and get the check-in time
         checks = self.checkedin_today(uddannelses_Hold_ID)
         
         # Combine all data into a single dictionary
@@ -147,11 +137,14 @@ class StudentTable:
             navn = student['navn']
             days_difference = student['days_difference']
             attendance_percentage = calced_attendance.get(navn, 100.0)  # Default to 100% if not found
-            checked_in_today = checks.get(navn, False)  # Default to False if not found
+            checked_in_today = checks.get(navn, {}).get('checked_in_today', 0)  # Default to 0 if not found
+            checked_in_today_timestamp = checks.get(navn, {}).get('checked_in_today_timestamp', None)  # Default to None if not found
+            
             attendance_table.append({
                 'navn': navn,
                 'attendance_percentage': attendance_percentage,
-                'checked_in_today': checked_in_today
+                'checked_in_today': checked_in_today,
+                'checked_in_today_timestamp': checked_in_today_timestamp
             })
         
         return attendance_table
@@ -167,7 +160,4 @@ if __name__ == "__main__":
     # Print the attendance table
     print("Attendance Table:")
     for entry in attendance_table:
-        print(f"Navn: {entry['navn']}, Attendance Percentage: {entry['attendance_percentage']:.2f}%, Checked In Today: {entry['checked_in_today']}")
-    
-    
-    
+        print(f"Navn: {entry['navn']}, Attendance Percentage: {entry['attendance_percentage']:.2f}%, Checked In Today: {entry['checked_in_today']}, Checked In Today Timestamp: {entry['checked_in_today_timestamp']}")
