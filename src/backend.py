@@ -1,20 +1,72 @@
 from flask import Flask, request, jsonify
 import mysql.connector as mysql
+from mysql.connector import Error, OperationalError
 import bcrypt
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
+class DatabaseConnection:
+    def __init__(self):
+        self.db = None
+        self.mycursor = None
+        self.connect()
+
+    def connect(self):
+        try:
+            self.db = mysql.connect(
+                host="79.171.148.163",
+                user="user",
+                passwd="MaaGodt*7913!",
+                database="LogunitDB",
+                connection_timeout=300
+            )
+            self.mycursor = self.db.cursor(dictionary=True)
+            print("Connected to database")
+        except Error as e:
+            print(f"Error connecting to MySQL: {e}")
+            raise
+
+    def reconnect(self):
+        if self.db is None or not self.db.is_connected():
+            self.connect()
+
+    def execute_query(self, query, params=None):
+        self.reconnect()
+        try:
+            self.mycursor.execute(query, params)
+        except OperationalError as err:
+            if err.errno in (mysql.connector.errorcode.CR_SERVER_LOST, mysql.connector.errorcode.CR_SERVER_GONE_ERROR):
+                print("Lost connection to MySQL server, attempting to reconnect...")
+                self.reconnect()
+                self.mycursor.execute(query, params)
+            else:
+                print(f"Error executing query: {err}")
+                raise
+
+    def fetchall(self):
+        return self.mycursor.fetchall()
+
+    def fetchone(self):
+        return self.mycursor.fetchone()
+
+    def fetchone_column(self, column):
+        row = self.fetchone()
+        if row:
+            return row.get(column)
+        return None
+
+    def commit(self):
+        self.db.commit()
+
+    def rollback(self):
+        self.db.rollback()
+
+db_connection = DatabaseConnection()
+
 class StudentTable:
     def __init__(self):
-        self.db = mysql.connect(
-            host="79.171.148.163",
-            user="user",
-            passwd="MaaGodt*7913!",
-            database="LogunitDB"
-        )
-        self.mycursor = self.db.cursor(dictionary=True)
-        print("Connected to database")
+        self.db_connection = db_connection
 
     def count_weekdays(self, start_date, end_date):
     # Ensure start_date is before end_date
@@ -48,8 +100,8 @@ class StudentTable:
         WHERE s.uddannelseID = %s
         GROUP BY s.studentID, s.navn, s.opstartsDato
         """
-        self.mycursor.execute(query, (today_date, uddannelses_Hold_ID))
-        result = self.mycursor.fetchall()
+        self.db_connection.execute_query(query, (today_date, uddannelses_Hold_ID))
+        result = self.db_connection.fetchall()
 
         today = datetime.now().date()
         attendance_table = []
@@ -74,45 +126,39 @@ class StudentTable:
 
 class DataHandler:
     def __init__(self):
-        self.db = mysql.connect(
-        host="79.171.148.163",
-        user="user",
-        passwd="MaaGodt*7913!",
-        database="LogunitDB"
-        )
-        self.mycursor = self.db.cursor(dictionary=True)
-
-        print("connected to database")
-
-        self.table = StudentTable(self.db, self.mycursor)
-
+        self.db_connection = db_connection
 
     def check_in(self, room_id=None, student_id=None):
         try:
-            self.mycursor.execute('SELECT lokaleNavn FROM Lokaler WHERE lokaleID = %s', (room_id,))
-            room_name = self.mycursor.fetchone()
+            query = "SELECT lokaleNavn FROM Lokaler WHERE lokaleID = %s"
+            self.db_connection.execute_query(query, (room_id,))
+            room_name = self.db_connection.fetchone()
 
             if not room_name:
                 return {"status": "error", "message": "Room not found"}, 404
 
-            self.mycursor.execute('SELECT navn FROM Students WHERE studentID = %s', (student_id,))
-            student_name = self.mycursor.fetchone()
+            query = "SELECT navn FROM Students WHERE studentID = %s"
+            self.db_connection.execute_query(query, (student_id,))
+            student_name = self.db_connection.fetchone()
 
             if not student_name:
                 return{"status": "error", "message": "Student not found"}, 404
             
-            self.mycursor.execute('INSERT INTO Checkind (studentID, lokaleID, checkIn) VALUES (%s, %s, NOW())', (student_id, room_id))
-            self.db.commit()
+            query = "INSERT INTO Checkind (studentID, lokaleID, checkIn) VALUES (%s, %s, NOW())"
+            self.db_connection.execute_query(query, (student_id, room_id))
+            self.db_connection.commit()
+
             return {"status": "success", "message": "Check-in successful"}, 200
         
         except Exception:
-            self.db.rollback()
+            self.db_connection.rollback()
             return {'status': 'Error during check-in'}
         
     def login_procedure(self, username, password):
         try:
-            self.mycursor.execute('SELECT email, password FROM Underviser WHERE (email, password) = (%s, %s)', (username, password))
-            result = self.mycursor.fetchone()
+            query = "SELECT email, password FROM Underviser WHERE (email, password) = (%s, %s)"
+            self.db_connection.execute_query(query, (username, password))
+            result = self.db_connection.fetchone()
 
             if result and bcrypt.checkpw(password.encode('utf-8'), result['password'].encode('utf-8')):
                 return {'status': 'Login: Credentials accepted'}
@@ -125,8 +171,10 @@ class DataHandler:
     def search(self, query):
         try:
             search_term = f"%{query}%"
-            self.mycursor.execute("SELECT studentID, navn FROM Students WHERE navn LIKE %s", (search_term,))
-            result = self.mycursor.fetchall()
+
+            query = "SELECT studentID, navn FROM Students WHERE navn LIKE %s"
+            self.db_connection.execute_query(query, (search_term,))
+            result = self.db_connection.fetchall()
 
             return result
             
@@ -136,8 +184,10 @@ class DataHandler:
     def search_uddannelse(self, query):
         try:
             search_term = f"%{query}%"
-            self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold WHERE uddannelseNavn LIKE %s", (search_term,))
-            result = self.mycursor.fetchall()
+
+            query = "SELECT uddannelseNavn FROM UddannelsesHold WHERE uddannelseNavn LIKE %s"
+            self.db_connection.execute_query(query, (search_term,))
+            result = self.db_connection.fetchall()
 
             return result
             
@@ -146,14 +196,21 @@ class DataHandler:
 
     def profile(self, id):
         try:
-            self.mycursor.execute("SELECT uddannelseID FROM Students WHERE studentID = %s", (id,))
-            uddannelse_id = self.mycursor.fetchone()['uddannelseID']
+            query = "SELECT uddannelseID FROM Students WHERE studentID = %s"
+            self.db_connection.execute_query(query, (id,))
+            uddannelse_id = self.db_connection.fetchone_column("uddannelseID")
 
-            self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold WHERE uddannelseID = %s", (uddannelse_id,))
-            uddannelse_navn = self.mycursor.fetchone()['uddannelseNavn']
 
-            self.mycursor.execute("SELECT navn FROM Students WHERE studentID = %s", (id,))
-            student_info = self.mycursor.fetchone()['navn']
+
+            query = "SELECT uddannelseNavn FROM UddannelsesHold WHERE uddannelseID = %s"
+            self.db_connection.execute_query(query, (uddannelse_id,))
+            uddannelse_navn = self.db_connection.fetchone_column("uddannelseNavn")
+
+
+
+            query = "SELECT navn FROM Students WHERE studentID = %s"
+            self.db_connection.execute_query(query, (id,))
+            student_info = self.db_connection.fetchone_column("navn")
 
             if uddannelse_navn and student_info:
                 return {
@@ -169,8 +226,10 @@ class DataHandler:
     def register_user(self, username, password):
         try:
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            self.mycursor.execute('INSERT INTO Underviser (email, password (%s, %s)', (username, hashed_password.decode('utf-8')))
-            self.db.commit()
+
+            query = "INSERT INTO Underviser (email, password (%s, %s)"
+            self.db_connection.execute_query(query, (username, hashed_password.decode('utf-8')))
+            self.db_connection.commit()
 
             return {'status': 'Create User: Success'}
         
@@ -179,8 +238,9 @@ class DataHandler:
 
     def create_team(self, new_team_name, meet_time):
         try:
-            self.mycursor.execute('INSERT INTO UddannelsesHold (uddannelseNavn, tidsPunkt) VALUES (%s, %s)', (new_team_name, meet_time))
-            self.db.commit()
+            query = "INSERT INTO UddannelsesHold (uddannelseNavn, tidsPunkt) VALUES (%s, %s)"
+            self.db_connection.execute_query(query, (new_team_name, meet_time))
+            self.db_connection.commit()
             
             return {'status': 'Create Team: Success'}
         
@@ -189,11 +249,14 @@ class DataHandler:
 
     def create_student(self, student_name, student_team, student_startdate):
         try:
-            self.mycursor.execute("SELECT uddannelseID FROM UddannelsesHold WHERE uddannelseNavn = %s", (student_team,))
-            uddannelse_id = self.mycursor.fetchone()['uddannelseID']
 
-            self.mycursor.execute('INSERT INTO Students (navn, uddannelseID, opstartsDato) VALUES (%s, %s, %s)', (student_name, uddannelse_id, student_startdate))
-            self.db.commit()
+            query = "SELECT uddannelseID FROM UddannelsesHold WHERE uddannelseNavn = %s"
+            self.db_connection.execute_query(query, (student_team,))
+            uddannelse_id = self.db_connection.fetchone_column("uddannelseID")
+
+            query = "INSERT INTO Students (navn, uddannelseID, opstartsDato) VALUES (%s, %s, %s)"
+            self.db_connection.execute_query(query, (student_name, uddannelse_id, student_startdate))
+            self.db_connection.commit()
             
             return {'status': 'Create student: Success'}
         
@@ -203,9 +266,10 @@ class DataHandler:
     def delete_students(self, students):
         try:
             placeholders = ', '.join(['%s'] * len(students))
+
             query = f"DELETE FROM Students WHERE navn IN ({placeholders})"
-            self.mycursor.execute(query, students)
-            self.db.commit()
+            self.db_connection.execute_query(query, students)
+            self.db_connection.commit()
 
             if self.mycursor.rowcount > 0:
                 return {'status': 'Students deleted'}
@@ -217,8 +281,9 @@ class DataHandler:
 
     def retrieve_team(self):
         try:
-            self.mycursor.execute("SELECT uddannelseNavn FROM UddannelsesHold")
-            result = self.mycursor.fetchall()
+            query = "SELECT uddannelseNavn FROM UddannelsesHold"
+            self.db_connection.execute_query(query)
+            result = self.db_connection.fetchall()
 
             if result:
                 return {
@@ -233,12 +298,13 @@ class DataHandler:
         
     def retrieve_students(self):
         try:
-            self.mycursor.execute("""
+            query = """
             SELECT Students.navn, Students.studentID, UddannelsesHold.uddannelseNavn, Students.opstartsDato
             FROM Students
             LEFT JOIN UddannelsesHold ON Students.uddannelseID = UddannelsesHold.uddannelseID
-            """)
-            result = self.mycursor.fetchall()
+            """
+            self.db_connection.execute_query(query)
+            result = self.db_connection.fetchall()
 
             if result:
                 return {
@@ -252,8 +318,9 @@ class DataHandler:
             return {'status': 'Error retrieving students'}
 
     def get_student_checkin(self, student_id):
-        self.mycursor.execute("SELECT checkIn FROM Checkind WHERE studentID = %s", (student_id,))
-        result = self.mycursor.fetchall()
+        query = "SELECT checkIn FROM Checkind WHERE studentID = %s"
+        self.db_connection.execute_query(query, (student_id,))
+        result = self.db_connection.fetchall()
 
         if result:
             return {
@@ -265,9 +332,17 @@ class DataHandler:
 
     def get_student_average(self, student_id):
         try:
-            team_id = self.mycursor.execute("SELECT uddannelseID FROM Students WHERE studentID = %s", (student_id))
+            query = "SELECT checkIn FROM Checkind WHERE studentID = %s"
+            self.db_connection.execute_query(query, (student_id,))
+            team_id = self.db_connection.fetchone()
+
+
+            query = "SELECT navn FROM Students WHERE studentID = %s"
+            self.db_connection.execute_query(query, (student_id,))     
+            navn = self.db_connection.fetchone()
+
+
             result = self.table.get_attend_table(team_id)
-            navn = self.mycursor.execute("SELECT navn FROM Students WHERE studentID = %s", (student_id))
             for student in result:
                 if student['navn'] == navn:
                     attendance = student['attendance_percentage']
@@ -275,14 +350,10 @@ class DataHandler:
                     checked_in_timestamp = ['checked_in_today_timestamp']
                     break
             return {'attendance': attendance, 'checked_in_today': checked_in_today, 'checked_in_today_timestamp': checked_in_timestamp}
-        
+       
         except Exception:
             return {'status': 'Student average data not found'}
     
-
-
-
-
 
 data_handler = DataHandler()
 @app.route('/', methods=['POST'])

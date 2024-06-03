@@ -21,9 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
+            console.log("Recieved student average:", data);
+
             document.getElementById('check-in-percentage-text').textContent = data.attendance;
             
-            if (data.checked_in_today = 1) {
+            if (data.checked_in_today == 1) {
                 document.getElementsByClassName("check-in-mark")[0].src = "img/check-mark.png";
                 document.getElementById('check-in-timestamp').textContent = data.checked_in_today_timestamp
             }
