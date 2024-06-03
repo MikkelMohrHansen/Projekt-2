@@ -69,24 +69,20 @@ class StudentTable:
         self.db_connection = db_connection
 
     def count_weekdays(self, start_date, end_date):
-    # Ensure start_date is before end_date
         if start_date > end_date:
             return 0
 
         weekdays_count = 0
 
-    # Loop through each day from start_date to end_date
         while start_date <= end_date:
-        # Check if start_date is a weekday (Monday to Friday)
             if start_date.weekday() < 5:
                 weekdays_count += 1
 
-        # Move to the next day
-        start_date += timedelta(days=1)
+            start_date += timedelta(days=1)
 
         return weekdays_count
 
-    def get_attend_table(self, uddannelses_Hold_ID):
+    def get_attend_table(self, uddannelses_hold_id):
         # Get today's date
         today_date = datetime.now().date()
 
@@ -100,10 +96,9 @@ class StudentTable:
         WHERE s.uddannelseID = %s
         GROUP BY s.studentID, s.navn, s.opstartsDato
         """
-        self.db_connection.execute_query(query, (today_date, uddannelses_Hold_ID))
+        self.db_connection.execute_query(query, (today_date, uddannelses_hold_id))
         result = self.db_connection.fetchall()
 
-        today = datetime.now().date()
         attendance_table = []
 
         for row in result:
@@ -111,7 +106,8 @@ class StudentTable:
             start_date = row['opstartsDato']
             antal = row['antal']
             checked_in_today_timestamp = row['checked_in_today_timestamp']
-            days_difference = self.count_weekdays(start_date, today)
+
+            days_difference = self.count_weekdays(start_date, today_date)
             attendance_percentage = (days_difference - antal) / days_difference * 100 if days_difference > 0 else 0
             checked_in_today = 1 if checked_in_today_timestamp is not None else 0
 
@@ -227,31 +223,31 @@ class DataHandler:
             else:
                 return {'status': 'Error loading profile'}
 
-        except Exception:
-            return {'status': 'Error registering user'}
+        except Exception as e:
+            print(e)
+            return {'status': 'Error loading profile'}
     
     def get_student_average(self, student_id):
         try:
             query = "SELECT uddannelseID FROM Students WHERE studentID = %s"
             self.db_connection.execute_query(query, (student_id,))
-            team_id = self.db_connection.fetchone_column("uddannelseID")
-
+            team_id = self.db_connection.fetchone()
 
             query = "SELECT navn FROM Students WHERE studentID = %s"
             self.db_connection.execute_query(query, (student_id,))     
             navn = self.db_connection.fetchone()
 
+            attendance_table = self.table.get_attend_table(team_id['uddannelseID'])
 
-            result = self.table.get_attend_table(team_id['uddannelseID'])
-            for student in result:
-                if student['navn'] == navn:
+            for student in attendance_table:
+                if student['navn'] == navn['navn']:
                     attendance = student['attendance_percentage']
                     checked_in_today = student['checked_in_today']
-                    checked_in_timestamp = ['checked_in_today_timestamp']
-                    break
-            return attendance, checked_in_today, checked_in_timestamp
-       
-        except Exception:
+                    checked_in_timestamp = student['checked_in_today_timestamp']
+                    return attendance, checked_in_today, checked_in_timestamp
+ 
+        except Exception as e:
+            print("Exception handeling 'get_student_average:", e)
             return {'status': 'Student average data not found'}
 
     def register_user(self, username, password):
