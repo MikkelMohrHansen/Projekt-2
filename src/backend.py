@@ -365,7 +365,7 @@ def handle():
             student_id = data.get('student_id')
 
             if not room_id or not student_id:
-                return jsonify(error="No 'room_id' or 'student_id' specified in JSON data."), 400
+                return jsonify({'error':'No "room_id" or "student_id" specified in JSON data.'}), 400
 
             result = data_handler.check_in(room_id, student_id)
             return jsonify(result), 200
@@ -376,7 +376,7 @@ def handle():
             password = data.get('pass')
 
             if not username or not password:
-                return jsonify(error="No 'user' or 'pass' specified in JSON data."), 400
+                return jsonify({'error':'No "user" or "pass" specified in JSON data.'}), 400
 
             result = data_handler.login_procedure(username, password)
             return jsonify(result), 200
@@ -403,7 +403,7 @@ def handle():
             student_id = data.get('id')
 
             if not student_id:
-                return jsonify({'error':"No 'studentID' specified in JSON data."}), 400
+                return jsonify({'error':'No "studentID" specified in JSON data.'}), 400
 
             result = data_handler.profile(student_id)
             return jsonify(result), 200
@@ -413,7 +413,7 @@ def handle():
             password = data.get('pass')
 
             if not username or not password:
-                return jsonify("No 'user' or 'pass' specified in JSON data"), 400
+                return jsonify({'error':'No "user" or "pass" specified in JSON data'}), 400
             
             result = data_handler.register_user(username, password)
             return jsonify(result), 200
@@ -458,7 +458,7 @@ def handle():
             return jsonify(result), 200
 
         case _:
-            return jsonify({'error':"Data 'subject' not supported."}), 400
+            return jsonify({'error':'Data "subject" not supported.'}), 400
         
         
 
