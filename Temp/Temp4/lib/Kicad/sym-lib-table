@@ -1,5 +1,0 @@
-(sym_lib_table
-  (version 7)
-  (lib (name "MyLibrary")(type "KiCad")(uri "${KIPRJMOD}/MyLibrary.kicad_sym")(options "")(descr ""))
-  (lib (name "UCN_new")(type "KiCad")(uri "C:/Users/Bruger/Downloads/UCN_new.kicad_sym")(options "")(descr ""))
-)

@@ -1,7 +1,0 @@
-FROM mysql:latest
-#RUN groupadd -r brugere && useradd -r -g brugere bruger
-#USER bruger
-ENV MYSQL_ROOT_PASSWORD=root
-COPY ./init.sql /docker-entrypoint-initdb.d/
-
-
