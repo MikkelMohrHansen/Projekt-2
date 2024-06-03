@@ -23,6 +23,18 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             document.getElementById('name').textContent = data.navn;
             document.getElementById('school-team').textContent = data.uddannelseNavn;
+
+            console.log("Recieved student average:", data);
+
+            document.getElementById('check-in-percentage-text').textContent = data.attendance;
+            
+            if (data.checked_in_today == 1) {
+                document.getElementsByClassName("check-in-mark")[0].src = "img/check-mark.png";
+                document.getElementById('check-in-timestamp').textContent = data.checked_in_today_timestamp
+            }
+            else {
+                document.getElementsByClassName("check-in-mark")[0].src = "img/x-mark.png";
+            }
         })
         .catch(error => console.error('Error:', error));
     } else {

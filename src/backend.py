@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import mysql.connector as mysql
 from mysql.connector import Error, OperationalError
 import bcrypt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 app = Flask(__name__)
 
@@ -36,7 +36,7 @@ class DatabaseConnection:
         try:
             self.mycursor.execute(query, params)
         except OperationalError as err:
-            if err.errno in (mysql.connector.errorcode.CR_SERVER_LOST, mysql.connector.errorcode.CR_SERVER_GONE_ERROR):
+            if err.errno in (mysql.errorcode.CR_SERVER_LOST, mysql.errorcode.CR_SERVER_GONE_ERROR):
                 print("Lost connection to MySQL server, attempting to reconnect...")
                 self.reconnect()
                 self.mycursor.execute(query, params)
@@ -94,7 +94,7 @@ class StudentTable:
         query = """
         SELECT s.navn, s.opstartsDato, 
                COUNT(c.studentID) AS antal,
-               MAX(CASE WHEN DATE(c.checkin) = %s THEN c.checkin ELSE NULL END) AS checked_in_today_timestamp
+               MAX(CASE WHEN DATE(c.checkIn) = %s THEN c.checkIn ELSE NULL END) AS checked_in_today_timestamp
         FROM Students s
         LEFT JOIN Checkind c ON s.studentID = c.studentID
         WHERE s.uddannelseID = %s
@@ -127,6 +127,8 @@ class StudentTable:
 class DataHandler:
     def __init__(self):
         self.db_connection = db_connection
+
+        self.table = StudentTable()
 
     def check_in(self, room_id=None, student_id=None):
         try:
@@ -194,10 +196,10 @@ class DataHandler:
         except Exception:
             return {'status': 'Error searching for team'}
 
-    def profile(self, id):
+    def profile(self, student_id):
         try:
             query = "SELECT uddannelseID FROM Students WHERE studentID = %s"
-            self.db_connection.execute_query(query, (id,))
+            self.db_connection.execute_query(query, (student_id,))
             uddannelse_id = self.db_connection.fetchone_column("uddannelseID")
 
 
@@ -209,13 +211,18 @@ class DataHandler:
 
 
             query = "SELECT navn FROM Students WHERE studentID = %s"
-            self.db_connection.execute_query(query, (id,))
+            self.db_connection.execute_query(query, (student_id,))
             student_info = self.db_connection.fetchone_column("navn")
+
+            attendance, checked_in_today, checked_in_timestamp = self.get_student_average(student_id)
 
             if uddannelse_navn and student_info:
                 return {
                     'navn': student_info,
-                    'uddannelseNavn': uddannelse_navn  
+                    'uddannelseNavn': uddannelse_navn,
+                    'attendance': attendance,
+                    'checked_in_today': checked_in_today,
+                    'checked_in_today_timestamp': checked_in_timestamp
                 }
             else:
                 return {'status': 'Error loading profile'}
@@ -223,6 +230,30 @@ class DataHandler:
         except Exception:
             return {'status': 'Error registering user'}
     
+    def get_student_average(self, student_id):
+        try:
+            query = "SELECT uddannelseID FROM Students WHERE studentID = %s"
+            self.db_connection.execute_query(query, (student_id,))
+            team_id = self.db_connection.fetchone_column("uddannelseID")
+
+
+            query = "SELECT navn FROM Students WHERE studentID = %s"
+            self.db_connection.execute_query(query, (student_id,))     
+            navn = self.db_connection.fetchone()
+
+
+            result = self.table.get_attend_table(team_id['uddannelseID'])
+            for student in result:
+                if student['navn'] == navn:
+                    attendance = student['attendance_percentage']
+                    checked_in_today = student['checked_in_today']
+                    checked_in_timestamp = ['checked_in_today_timestamp']
+                    break
+            return attendance, checked_in_today, checked_in_timestamp
+       
+        except Exception:
+            return {'status': 'Student average data not found'}
+
     def register_user(self, username, password):
         try:
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -329,30 +360,6 @@ class DataHandler:
             }
         else:
             return {'status': 'Checkin data not found'}
-
-    def get_student_average(self, student_id):
-        try:
-            query = "SELECT checkIn FROM Checkind WHERE studentID = %s"
-            self.db_connection.execute_query(query, (student_id,))
-            team_id = self.db_connection.fetchone()
-
-
-            query = "SELECT navn FROM Students WHERE studentID = %s"
-            self.db_connection.execute_query(query, (student_id,))     
-            navn = self.db_connection.fetchone()
-
-
-            result = self.table.get_attend_table(team_id)
-            for student in result:
-                if student['navn'] == navn:
-                    attendance = student['attendance_percentage']
-                    checked_in_today = student['checked_in_today']
-                    checked_in_timestamp = ['checked_in_today_timestamp']
-                    break
-            return {'attendance': attendance, 'checked_in_today': checked_in_today, 'checked_in_today_timestamp': checked_in_timestamp}
-       
-        except Exception:
-            return {'status': 'Student average data not found'}
     
 
 data_handler = DataHandler()
@@ -453,13 +460,8 @@ def handle():
             return jsonify(result), 200
 
         case 'session get data':
-            student_id = data.get('id')
+            student_id = int(data.get('id'))
             result = data_handler.get_student_checkin(student_id)
-            return jsonify(result), 200
-        
-        case 'session get student table':
-            student_id = data.get('id')
-            result = data_handler.get_student_average(student_id)
             return jsonify(result), 200
 
         case _:
