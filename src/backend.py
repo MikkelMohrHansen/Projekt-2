@@ -338,11 +338,13 @@ class DataHandler:
                 if student['navn'] == navn:
                     attendance = student['attendance_percentage']
                     checked_in_today = student['checked_in_today']
+                    checked_in_timestamp = ['checked_in_today_timestamp']
                     break
-            return {'attendance': attendance, 'checked_in_today': checked_in_today}
+            return {'attendance': attendance, 'checked_in_today': checked_in_today, 'checked_in_today_timestamp': checked_in_timestamp}
         
         except Exception:
             return {'status': 'Student average data not found'}
+    
 
 
 
