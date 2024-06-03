@@ -1,4 +1,4 @@
-setInterval(getData(), 40000);
+getData();
 
 function getData() {
 

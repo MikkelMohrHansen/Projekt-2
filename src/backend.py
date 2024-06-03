@@ -127,7 +127,6 @@ class StudentTable:
         attendance_table = []
         for student in days_diff_list:
             navn = student['navn']
-            days_difference = student['days_difference']
             attendance_percentage = calced_attendance.get(navn, 100.0)  # Default to 100% if not found
             checked_in_today = checks.get(navn, False)  # Default to False if not found
             attendance_table.append({
@@ -454,7 +453,7 @@ def handle():
         
         case 'session get student table':
             student_id = data.get('id')
-            result = data_handler.get_student_average(id)
+            result = data_handler.get_student_average(student_id)
             return jsonify(result), 200
 
         case _:
