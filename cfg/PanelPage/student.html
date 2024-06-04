@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Student | Profile</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="css/student.css" type="text/css"/>
+        <link rel="stylesheet" href="css/shared.css" type="text/css"/>
+        <link rel="stylesheet" href="css/search.css" type="text/css"/>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+        <div id="top-bar">
+            <img id="logo-home" src="img/TimeLogging-Logo.png" alt="Home">
+            
+            <div id="search-timelogger-container">
+                <input type="text" placeholder="Search TimeLogger" id="inputbox_searchtimelogger">
+                <div id="search-results"></div>
+            </div>
+
+            <img id="bug-btn" src="img/bug_img.png" alt="refresh">
+            <img id="settings-btn" src="img/settings_img.png" alt="settings">
+            <img id="user-acc-logo" src="img/placeholder.png" alt="user">
+        </div>
+
+        <br>
+
+        <div id="middle-bar">
+            <div class="dropdown">
+                <button type="button" id="dropdown_btn">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </button>
+                <div id="options">
+                    <div id="teams">Hold</div>
+                    <div id="students">Studerende</div>
+                    <div id="rooms">Lokaler</div>
+                </div>
+            </div>
+            <div id="location-path">
+                <div id="bar-1">
+                    <p>Dashboard</p>
+                </div>
+                <div id="bar-2">
+                    <p>Student</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-wnd">
+            <div id="information">
+                <h1 id="name">{Insert Name}</h1>
+                <img class="check-in-mark" src="img/x-mark.png" alt="check-in">
+                <p id="check-in-timestamp"></p>
+                <h3 id="school-team">{Insert School - Team}</h3>
+            </div>
+            <div id="statistics">
+
+                <div id="check-in-percentage">
+                    <h2>Gennemsnitlige Fravær</h2>
+
+                    <h3><span id="check-in-percentage-text">87</span>%</h3>
+                </div>
+
+            </div>
+            <div id="teachers">
+                <h2>Tildelte Undervisere</h2>
+
+                <p id="teacher-1">Søren Lynge</p>
+                <p id="teacher-2">Frank Poulsen</p>
+            </div>
+        </div>
+        <script src="script/search.js"></script>
+        <script src="script/dropdown.js"></script>
+        <script src="script/dropdown_options.js"></script>
+        <script src="script/profile.js"></script>
+    </body>
+</html>

@@ -21,6 +21,13 @@ services:
     environment:
       - PMA_ARBITRARY=1
 
+  nginx:
+    container_name: "nginx"
+    image: minityhyi/nginx:1.0
+    ports: 
+      - 80:81
+      - 443:443
+
 volumes:
   mysql_data:
 
