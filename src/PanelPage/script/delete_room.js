@@ -1,17 +1,17 @@
-document.getElementById('delete-student-submit-btn').addEventListener('click', function() {
-    const checkedBoxes = document.querySelectorAll('input[name="student-checked"]:checked');
-    const studentsToDelete = [];
+document.getElementById('delete-room-submit-btn').addEventListener('click', function() {
+    const checkedBoxes = document.querySelectorAll('input[name="room-checked"]:checked');
+    const roomsToDelete = [];
 
     checkedBoxes.forEach(checkbox => {
-        const studentDivId = checkbox.id.replace('student-checkbox-', 'student-');
-        const studentLabel = document.getElementById(`${studentDivId}-title`);
-        studentsToDelete.push(studentLabel.textContent);
+        const roomDivId = checkbox.id.replace('room-checkbox-', 'room-');
+        const roomLabel = document.getElementById(`${roomDivId}-title`);
+        roomsToDelete.push(roomLabel.textContent);
     });
 
-    if (studentsToDelete.length > 0) {
+    if (roomsToDelete.length > 0) {
         var senddata = {
-            data: 'delete students',
-            students: studentsToDelete
+            data: 'delete rooms',
+            rooms: roomsToDelete
         };
 
         fetch('https://79.171.148.163/api', {
@@ -30,11 +30,11 @@ document.getElementById('delete-student-submit-btn').addEventListener('click', f
         .then(data => {
             console.log('Response from server:', data);
 
-            if (data.status === 'Students deleted') {
-                console.log('Selected students have been deleted.');
+            if (data.status === 'Rooms deleted') {
+                console.log('Selected rooms have been deleted.');
                 checkedBoxes.forEach(checkbox => {
-                    const studentDiv = document.getElementById(checkbox.id.replace('student-checkbox-', 'student-'));
-                    studentDiv.remove();
+                    const roomDiv = document.getElementById(checkbox.id.replace('room-checkbox-', 'room-'));
+                    roomDiv.remove();
                 });
             } else {
                 console.error('Error:', data.status);

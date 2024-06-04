@@ -128,39 +128,41 @@
     margin: 0;
 }
 
-#teams-content {
+#room-content {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
     margin-top: 20px;
 }
 
-#teams-content > div, #teams-content > p {
+#room-content > div, #room-content > p {
     flex: 1 1 calc(33.333% - 20px);
     box-sizing: border-box;
 }
 
-#teams-content input[type="checkbox"] {
+#room-content input[type="checkbox"] {
     margin-top: 10px;
 }
 
-#team-1, #team-2, #team-3 {
+#room-1, #room-2, #room-3 {
     border-bottom: 2px solid black;
     padding-bottom: 10px;
 }
 
-#delete-team-submit-btn {
+#delete-room-submit-btn {
     margin-top: 50px;
 }
 
-#delete-team-submit-btn, 
-#add-team-submit-btn {
+#delete-room-submit-btn {
     margin-bottom: 2px;
     align-self: flex-end; /* Align the submit button to the start of the column */
 }
 
-#delete-team-submit-btn:hover, 
-#add-team-submit-btn:hover {
+#delete-room-submit-btn:hover {
     cursor: pointer;
     text-decoration: underline;
+}
+
+.lokale-info {
+    margin-left: 10px;
 }

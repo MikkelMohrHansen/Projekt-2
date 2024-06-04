@@ -62,6 +62,9 @@ class DatabaseConnection:
     def rollback(self):
         self.db.rollback()
 
+    def get_row_count(self):
+        return self.mycursor.rowcount
+
 db_connection = DatabaseConnection()
 
 class StudentTable:
@@ -244,7 +247,9 @@ class DataHandler:
                     attendance = student['attendance_percentage']
                     checked_in_today = student['checked_in_today']
                     checked_in_timestamp = student['checked_in_today_timestamp']
-                    return attendance, checked_in_today, checked_in_timestamp
+                    
+                    checked_in_timestamp_str = checked_in_timestamp.strftime("%H:%M:%S")
+                    return attendance, checked_in_today, checked_in_timestamp_str
  
         except Exception as e:
             print("Exception handeling 'get_student_average:", e)
@@ -274,6 +279,17 @@ class DataHandler:
         except Exception:
             return {'status': 'Error creating team'}
 
+    def create_room(self, room_name):
+        try:
+            query = "INSERT INTO Lokaler (lokaleNavn) VALUES (%s)"
+            self.db_connection.execute_query(query, (room_name,))
+            self.db_connection.commit()
+            
+            return {'status': 'Create Room: Success'}
+        
+        except Exception:
+            return {'status': 'Error creating room'}
+
     def create_student(self, student_name, student_team, student_startdate):
         try:
 
@@ -298,7 +314,7 @@ class DataHandler:
             self.db_connection.execute_query(query, students)
             self.db_connection.commit()
 
-            if self.mycursor.rowcount > 0:
+            if self.db_connection.get_row_count() > 0:
                 return {'status': 'Students deleted'}
             else:
                 return {'status': 'Error: No students deleted'}
@@ -306,7 +322,23 @@ class DataHandler:
         except Exception:
             return {'status':'Error deleting student'}
 
-    def retrieve_team(self):
+    def delete_rooms(self, rooms):
+        try:
+            placeholders = ', '.join(['%s'] * len(rooms))
+
+            query = f"DELETE FROM Lokaler WHERE lokaleNavn IN ({placeholders})"
+            self.db_connection.execute_query(query, rooms)
+            self.db_connection.commit()
+
+            if self.db_connection.get_row_count() > 0:
+                return {'status': 'Rooms deleted'}
+            else:
+                return {'status': 'Error: No rooms deleted'}
+
+        except Exception:
+            return {'status':'Error deleting rooms'}
+
+    def retrieve_teams(self):
         try:
             query = "SELECT uddannelseNavn FROM UddannelsesHold"
             self.db_connection.execute_query(query)
@@ -323,6 +355,23 @@ class DataHandler:
         except Exception:
             return {'status': 'Error retrieving team'}
         
+    def retrieve_rooms(self):
+        try:
+            query = "SELECT lokaleID, lokaleNavn FROM Lokaler"
+            self.db_connection.execute_query(query)
+            result = self.db_connection.fetchall()
+
+            if result:
+                return {
+                    'status': 'Retrieved room list',
+                    'room_list': result  
+                }
+            else:
+                return {'status': 'Error: room not found'}
+        
+        except Exception:
+            return {'status': 'Error retrieving room'}
+
     def retrieve_students(self):
         try:
             query = """
@@ -432,6 +481,12 @@ def handle():
 
             result = data_handler.create_team(team_name, team_meet_time)
             return jsonify(result), 200
+        
+        case 'create room request':
+            room_name = data.get('room_name')
+
+            result = data_handler.create_room(room_name)
+            return jsonify(result), 200
 
         case 'create student request':
             student_name = data.get('student_name')
@@ -446,9 +501,19 @@ def handle():
 
             result = data_handler.delete_students(students)
             return jsonify(result), 200
+        
+        case 'delete rooms':
+            rooms = data.get('rooms')
+
+            result = data_handler.delete_rooms(rooms)
+            return jsonify(result), 200
 
         case 'request teams':
-            result = data_handler.retrieve_team()
+            result = data_handler.retrieve_teams()
+            return jsonify(result), 200
+        
+        case 'request rooms':
+            result = data_handler.retrieve_rooms()
             return jsonify(result), 200
         
         case 'request students':

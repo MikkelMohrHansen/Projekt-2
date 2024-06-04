@@ -22,6 +22,7 @@
 }
 
 #information {
+    display: flex;
     border: 3px dotted black;
     flex: 1 1 50%;
     order: 1;
@@ -72,7 +73,9 @@
    font-weight: 100;
 }
 
-.check-in-mark {
+.check-in-mark,
+#check-in-timestamp {
+    display: flex;
     margin-left: 20px;
     width: 30px;
     height: 30px;

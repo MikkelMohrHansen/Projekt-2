@@ -140,6 +140,9 @@
     border: 3px dotted black;
     box-sizing: border-box;
     margin: 10px;
+
+    overflow-y: auto;
+    max-height: 80vH;
 }
 
 #content-wnd h2{
