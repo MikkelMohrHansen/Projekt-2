@@ -248,8 +248,12 @@ class DataHandler:
                     checked_in_today = student['checked_in_today']
                     checked_in_timestamp = student['checked_in_today_timestamp']
                     
-                    checked_in_timestamp_str = checked_in_timestamp.strftime("%H:%M:%S")
-                    return attendance, checked_in_today, checked_in_timestamp_str
+                    if checked_in_timestamp != None:
+                        checked_in_timestamp_str = checked_in_timestamp.strftime("%H:%M:%S")
+                        return attendance, checked_in_today, checked_in_timestamp_str
+                    else:
+                        return attendance, checked_in_today, checked_in_timestamp
+                    
  
         except Exception as e:
             print("Exception handeling 'get_student_average:", e)
@@ -357,7 +361,7 @@ class DataHandler:
         
     def retrieve_rooms(self):
         try:
-            query = "SELECT lokaleID, lokaleNavn FROM Lokaler"
+            query = "SELECT lokaleNavn, lokaleID FROM Lokaler"
             self.db_connection.execute_query(query)
             result = self.db_connection.fetchall()
 

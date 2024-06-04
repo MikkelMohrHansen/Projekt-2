@@ -116,7 +116,7 @@ body {
     display: block;
 }
 
-#teams:hover, #students:hover {
+#teams:hover, #students:hover, #rooms:hover {
     cursor: pointer;
     text-decoration: underline;
 }

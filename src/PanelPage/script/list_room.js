@@ -48,7 +48,7 @@ function request_rooms() {
                 const lokaleID = document.createElement('p');
                 lokaleID.id = `room-${index + 1}-lokaleID`;
                 lokaleID.className = `lokale-info`;
-                lokaleID.textContent = student.lokaleID;
+                lokaleID.textContent = room.lokaleID;
 
                 roomDiv.appendChild(roomLabel);
                 roomDiv.appendChild(roomCheckbox);

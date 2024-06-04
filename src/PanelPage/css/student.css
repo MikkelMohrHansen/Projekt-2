@@ -22,7 +22,6 @@
 }
 
 #information {
-    display: flex;
     border: 3px dotted black;
     flex: 1 1 50%;
     order: 1;
@@ -58,19 +57,6 @@
 
 #school-team {
     padding-left: 20px;
-}
-
-#activity-wnd {
-    width: 400px;
-    height: 100px;
-
-    margin-left: 5px;
-
-    background-color: #ffffff;
-}
-
-.time-period {
-   font-weight: 100;
 }
 
 .check-in-mark,
