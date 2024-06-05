@@ -22,6 +22,7 @@ function createStudent() {
     var s_name = document.getElementById('inputbox_student_name').value;
     var s_team = document.getElementById('inputbox_student_team').value;
     var s_date = document.getElementById('inputbox_student_starttime').value;
+    var s_enddate = document.getElementById('inputbox_student_endtime').value;
 
     const confirmationText = document.querySelector("#confirmation-field");
 
@@ -29,7 +30,7 @@ function createStudent() {
     if (s_name.trim() === '') {
         document.getElementById('inputbox_student_name').classList.add('error');
         document.getElementById('confirmation-field').classList.add('error');
-        confirmationText.textContent = "Venligst udfyld 'studerende navn', 'Uddannelse' og 'Opstartsdato' kasserne.";
+        confirmationText.textContent = "Venligst udfyld 'studerende navn', 'Uddannelse', 'Opstartsdato' og 'Slutdato'kasserne.";
 
     } else {
         document.getElementById('inputbox_student_name').classList.remove('error');
@@ -40,7 +41,7 @@ function createStudent() {
     if (s_team.trim() === '') {
         document.getElementById('inputbox_student_team').classList.add('error');
         document.getElementById('confirmation-field').classList.add('error');
-        confirmationText.textContent = "Venligst udfyld 'studerende navn', 'Uddannelse' og 'Opstartsdato' kasserne.";
+        confirmationText.textContent = "Venligst udfyld 'studerende navn', 'Uddannelse', 'Opstartsdato' og 'Slutdato'kasserne.";
     } else {
         document.getElementById('inputbox_student_team').classList.remove('error');
         document.getElementById('confirmation-field').classList.remove('error');
@@ -50,14 +51,24 @@ function createStudent() {
     if (s_date.trim() === '') {
         document.getElementById('inputbox_student_starttime').classList.add('error');
         document.getElementById('confirmation-field').classList.add('error');
-        confirmationText.textContent = "Venligst udfyld 'studerende navn', 'Uddannelse' og 'Opstartsdato' kasserne.";
+        confirmationText.textContent = "Venligst udfyld 'studerende navn', 'Uddannelse', 'Opstartsdato' og 'Slutdato'kasserne.";
     } else {
         document.getElementById('inputbox_student_starttime').classList.remove('error');
         document.getElementById('confirmation-field').classList.remove('error');
         confirmationText.textContent = "";
     }
 
-    if (s_name.trim() === '' || s_team.trim() === '' || s_date.trim() === '') {
+    if (s_enddate.trim() === '') {
+        document.getElementById('inputbox_student_endtime').classList.add('error');
+        document.getElementById('confirmation-field').classList.add('error');
+        confirmationText.textContent = "Venligst udfyld 'studerende navn', 'Uddannelse', 'Opstartsdato' og 'Slutdato'kasserne.";
+    } else {
+        document.getElementById('inputbox_student_endtime').classList.remove('error');
+        document.getElementById('confirmation-field').classList.remove('error');
+        confirmationText.textContent = "";
+    }
+
+    if (s_name.trim() === '' || s_team.trim() === '' || s_date.trim() === '' || s_enddate.trim() === '' ) {
         console.log('[!] Inputboxes are empty, aborting...');
         return;
     }
@@ -66,7 +77,8 @@ function createStudent() {
         data: 'create student request',
         student_name: s_name,
         student_team: s_team,
-        student_start: s_date
+        student_start: s_date,
+        student_end: s_enddate
     };
 
     console.log('JSON data to be sent:', JSON.stringify(senddata));

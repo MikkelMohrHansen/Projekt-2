@@ -295,15 +295,15 @@ class DataHandler:
         except Exception:
             return {'status': 'Error creating room'}
 
-    def create_student(self, student_name, student_team, student_startdate):
+    def create_student(self, student_name, student_team, student_startdate, student_enddate):
         try:
 
             query = "SELECT uddannelseID FROM UddannelsesHold WHERE uddannelseNavn = %s"
             self.db_connection.execute_query(query, (student_team,))
             uddannelse_id = self.db_connection.fetchone_column("uddannelseID")
 
-            query = "INSERT INTO Students (navn, uddannelseID, opstartsDato) VALUES (%s, %s, %s)"
-            self.db_connection.execute_query(query, (student_name, uddannelse_id, student_startdate))
+            query = "INSERT INTO Students (navn, uddannelseID, opstartsDato, slutDato) VALUES (%s, %s, %s, %s)"
+            self.db_connection.execute_query(query, (student_name, uddannelse_id, student_startdate, student_enddate))
             self.db_connection.commit()
             
             return {'status': 'Create student: Success'}
@@ -497,8 +497,9 @@ def handle():
             student_name = data.get('student_name')
             student_team = data.get('student_team')
             student_start = data.get('student_start')
+            student_end = data.get('student_end')
 
-            result = data_handler.create_student(student_name, student_team, student_start)
+            result = data_handler.create_student(student_name, student_team, student_start, student_end)
             return jsonify(result), 200
 
         case 'delete students':

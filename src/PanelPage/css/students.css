@@ -90,7 +90,8 @@
 
 #inputbox_student_name.error,
 #inputbox_student_team.error,
-#inputbox_student_starttime {
+#inputbox_student_starttime.error
+#inputbox_student_endtime.error {
     border: 3px solid #8c1414;
 }
 
