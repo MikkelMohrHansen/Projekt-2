@@ -264,7 +264,7 @@ class DataHandler:
         try:
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-            query = "INSERT INTO Underviser (email, password (%s, %s)"
+            query = "INSERT INTO Underviser (email, password) VALUES (%s, %s)"
             self.db_connection.execute_query(query, (username, hashed_password.decode('utf-8')))
             self.db_connection.commit()
 
