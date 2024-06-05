@@ -3,6 +3,7 @@ import mysql.connector as mysql
 from mysql.connector import Error, OperationalError
 import bcrypt
 from datetime import datetime, timedelta, date
+import math
 
 app = Flask(__name__)
 
@@ -111,7 +112,7 @@ class StudentTable:
             checked_in_today_timestamp = row['checked_in_today_timestamp']
 
             days_difference = self.count_weekdays(start_date, today_date)
-            attendance_percentage = (days_difference - antal) / days_difference * 100 if days_difference > 0 else 0
+            attendance_percentage = "{:0.2f}".format((days_difference - antal) / days_difference * 100 if days_difference > 0 else 0)
             checked_in_today = 1 if checked_in_today_timestamp is not None else 0
 
             attendance_table.append({
