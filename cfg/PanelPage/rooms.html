@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Rooms</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="css/rooms.css" type="text/css"/>
+        <link rel="stylesheet" href="css/shared.css" type="text/css"/>
+        <link rel="stylesheet" href="css/search.css" type="text/css"/>
+
+    </head>
+    <body>
+        <div id="top-bar">
+            <img id="logo-home" src="img/TimeLogging-Logo.png" alt="Home">
+            
+            <div id="search-timelogger-container">
+                <input type="text" placeholder="Search TimeLogger" id="inputbox_searchtimelogger">
+                <div id="search-results"></div>
+            </div>
+
+            <img id="bug-btn" src="img/bug_img.png" alt="refresh">
+            <img id="settings-btn" src="img/settings_img.png" alt="settings">
+            <img id="user-acc-logo" src="img/placeholder.png" alt="user">
+        </div>
+
+        <br>
+
+        <div id="middle-bar">
+            <div class="dropdown">
+                <button type="button" id="dropdown_btn">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </button>
+                <div id="options">
+                    <div id="teams">Hold</div>
+                    <div id="students">Studerende</div>
+                    <div id="rooms">Lokaler</div>
+                </div>
+            </div>
+            <div id="location-path">
+                <div id="bar-1">
+                    <p>Dashboard</p>
+                </div>
+                <div id="bar-2">
+                    <p>Lokaler</p>
+                </div>
+            </div>
+            <div id="clickable">
+                <div class="link-text" id="create_room"><p>Opret nyt lokale</p></div>
+                <div id="create_open">
+                    <div id="close_btn_create">
+                        <div class="close-bar"></div>
+                        <div class="close-bar"></div>
+                    </div>
+                    <h2>Opret nyt lokale</h2>
+                    <div id="inputboxes-row1">
+                        <input type="text" placeholder="Lokale navn" id="inputbox_room_name" required><br>
+                    </div>
+                    <p id="create-submit-btn">Submit</p>
+                    <p id="confirmation-field"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-wnd">
+            <h2>Lokaler</h2>
+
+            <div id="room-content">
+                <div id="room-1">
+                    <label id="room-1-title">Test 1</label>
+                    <input type="checkbox" id="teams-checkbox-1" name="room-checked" />
+                </div>
+                <div id="room-2">
+                    <label id="room-2-title">Test 2</label>
+                    <input type="checkbox" id="room-checkbox-2" name="room-checked" />
+                </div>
+                <div id="room-3">
+                    <label id="room-3-title">Test 3</label>
+                    <input type="checkbox" id="room-checkbox-3" name="room-checked" />
+                </div>
+            </div>
+
+
+            <p id="delete-room-submit-btn">Slet Lokale</p>
+        </div>
+
+        <script src="script/search.js"></script>
+        <script src="script/dropdown.js"></script>
+        <script src="script/dropdown_options.js"></script>
+        
+        <script src="script/createroom.js"></script>
+        <script src="script/list_room.js"></script>
+        <script src="script/delete_room.js"></script>
+    </body>
+</html>

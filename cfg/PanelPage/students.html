@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Students</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="css/students.css" type="text/css"/>
+        <link rel="stylesheet" href="css/shared.css" type="text/css"/>
+        <link rel="stylesheet" href="css/search.css" type="text/css"/>
+
+    </head>
+    <body>
+        <div id="top-bar">
+            <img id="logo-home" src="img/TimeLogging-Logo.png" alt="Home">
+            
+            <div id="search-timelogger-container">
+                <input type="text" placeholder="Search TimeLogger" id="inputbox_searchtimelogger">
+                <div id="search-results"></div>
+            </div>
+
+            <img id="bug-btn" src="img/bug_img.png" alt="refresh">
+            <img id="settings-btn" src="img/settings_img.png" alt="settings">
+            <img id="user-acc-logo" src="img/placeholder.png" alt="user">
+        </div>
+
+        <br>
+
+        <div id="middle-bar">
+            <div class="dropdown">
+                <button type="button" id="dropdown_btn">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </button>
+                <div id="options">
+                    <div id="teams">Hold</div>
+                    <div id="students">Studerende</div>
+                    <div id="rooms">Lokaler</div>
+                </div>
+            </div>
+            <div id="location-path">
+                <div id="bar-1">
+                    <p>Dashboard</p>
+                </div>
+                <div id="bar-2">
+                    <p>Studerende</p>
+                </div>
+                <div id="clickable">
+                    <div class="link-text" id="create_student"><p>Opret ny studerende</p></div>
+                    <div id="create_open">
+                        <div id="close_btn_create">
+                            <div class="close-bar"></div>
+                            <div class="close-bar"></div>
+                        </div>
+                        <h2>Opret ny studerende</h2>
+                        <div id="inputboxes-row1">
+                            <input type="text" placeholder="Studerende navn" id="inputbox_student_name" required><br>
+                            <input type="text" placeholder="Uddannelse" id="inputbox_student_team" required><br>
+                            <div id="search-results-uddannelse"></div>
+                            <input type="text" placeholder="Opstartsdato (format: YYYY-MM-DD)" id="inputbox_student_starttime" required>
+                        </div>
+                        <p id="create-submit-btn">Submit</p>
+                        <p id="confirmation-field"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-wnd">
+            <h2>Studerende</h2>
+
+            <div id="student-content">
+                <div id="student-1">
+                    <label id="student-1-title">Test 1</label>
+                    <input type="checkbox" id="student-checkbox-1" name="student-checked" />
+
+                    <p class="student-info" id="student-1-team">IT-Teknolog</p>
+                    <p class="student-info" id="student-1-startdate">2023-11-06</p>
+                </div>
+                <div id="student-2">
+                    <label id="student-2-title">Test 2</label>
+                    <input type="checkbox" id="student-checkbox-2" name="student-checked" />
+
+                    <p class="student-info" id="student-1-team">IT-Teknolog</p>
+                    <p class="student-info" id="student-1-startdate">2023-11-06</p>
+                </div>
+                <div id="student-3">
+                    <label id="student-3-title">Test 3</label>
+                    <input type="checkbox" id="student-checkbox-3" name="student-checked" />
+
+                    <p class="student-info" id="student-1-team">IT-Teknolog</p>
+                    <p class="student-info" id="student-1-startdate">2023-11-06</p>
+                </div>
+            </div>
+
+
+            <p id="delete-student-submit-btn">Slet studerende</p>
+        </div> 
+
+        </div>
+        <script src="script/search.js"></script>
+        <script src="script/dropdown.js"></script>
+        <script src="script/dropdown_options.js"></script>
+
+        <script src="script/createstudent.js"></script>
+        <script src="script/list_students.js"></script>
+        <script src="script/createstudent_search_team.js"></script>
+        <script src="script/delete_student.js"></script>
+    </body>
+</html>

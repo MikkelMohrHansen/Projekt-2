@@ -10,6 +10,7 @@ COPY nginx.conf /etc/nginx/conf.d/
 # Copy SSL certificate and key
 COPY nginx.crt /home/
 COPY nginx.key /home/
+COPY PanelPage /usr/share/nginx/PanelPage
 
 # Expose ports for HTTP and HTTPS
 EXPOSE 80
