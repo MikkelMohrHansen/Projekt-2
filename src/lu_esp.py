@@ -5,6 +5,9 @@ import wifi_connection
 import urequests
 import ujson as json
 
+def decimal_to_ascii(string):
+	ascii_string = ''.join(chr(num) for num in string if num != 0)
+	return ascii_string
 
 class Hardware:
 	def __init__(self):
@@ -35,11 +38,13 @@ class Hardware:
 							key = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
 
 							if self.rdr.auth(self.rdr.AUTHENT1A, 8, key, raw_uid) == self.rdr.OK:
-								ssid = self.decimal_to_ascii(self.rdr.read(8))
-								password = self.decimal_to_ascii(self.rdr.read(9))
+								ssid = decimal_to_ascii(self.rdr.read(8))
+								password = decimal_to_ascii(self.rdr.read(9))
 
 								print(f"SSID: {ssid} PASSWORD: {password}")
 								print(wifi_connection.activate(ssid, password))
+								self.yellow_led.on()
+								sleep(5)
 
 								self.rdr.stop_crypto1()
 							else:
@@ -57,10 +62,6 @@ class Hardware:
 
 		except KeyboardInterrupt:
 			print("Bye")
-
-	def decimal_to_ascii(self, string):
-		ascii_string = ''.join(chr(num) for num in string if num != 0)
-		return ascii_string
 	
 	def blink_led(self, arg_led, times=10, delay=0.25):
 		if arg_led == 'red':
@@ -78,32 +79,35 @@ class Hardware:
 			led.off()
 			sleep(delay)
 
-	def read_card(self):    
+	def read_card(self):
+		
 		try:
-			(stat, tag_type) = self.rdr.request(self.rdr.REQIDL)
-
-			if stat == self.rdr.OK:
-
-				(stat, raw_uid) = self.rdr.anticoll()
+			while True:
+				(stat, tag_type) = self.rdr.request(self.rdr.REQIDL)
 
 				if stat == self.rdr.OK:
-					print("New card detected")
-					print("  - tag type: 0x%02x" % tag_type)
-					print("  - uid	 : 0x%02x%02x%02x%02x" % (raw_uid[0], raw_uid[1], raw_uid[2], raw_uid[3]))
-					print("")
 
-					if self.rdr.select_tag(raw_uid) == self.rdr.OK:
+					(stat, raw_uid) = self.rdr.anticoll()
 
-						key = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+					if stat == self.rdr.OK:
+						print("New card detected")
+						print("  - tag type: 0x%02x" % tag_type)
+						print("  - uid	 : 0x%02x%02x%02x%02x" % (raw_uid[0], raw_uid[1], raw_uid[2], raw_uid[3]))
+						print("")
 
-						if self.rdr.auth(self.rdr.AUTHENT1A, 8, key, raw_uid) == self.rdr.OK:
-							print("Address 8 data: %s" % self.rdr.read(8))
-							print("Address 9 data: %s" % self.rdr.read(9))
-							self.rdr.stop_crypto1()
+						if self.rdr.select_tag(raw_uid) == self.rdr.OK:
+
+							key = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+
+							if self.rdr.auth(self.rdr.AUTHENT1A, 8, key, raw_uid) == self.rdr.OK:
+								student_id = decimal_to_ascii(self.rdr.read(8))
+								self.rdr.stop_crypto1()
+								sleep(2)
+								return student_id
+							else:
+								print("Authentication error")
 						else:
-							print("Authentication error")
-					else:
-						print("Failed to select tag")
+							print("Failed to select tag")
 
 		except KeyboardInterrupt:
 			print("Bye")
@@ -138,18 +142,18 @@ class HTTPClient:
 
 if __name__ == "__main__":
 	SERVER_URL = "https://79.171.148.163/api"
-	room_id = int("5035")
+	room_id = int("7913")
 	
 	hardware = Hardware()
 	hardware.connect_to_wifi()
 	http_client = HTTPClient(SERVER_URL, room_id)
 	
-	"""
 	while True:
 		# Read the card and get the student ID
-		card_uid, student_id = hardware.read_card()
-		if card_uid:
+		student_id = hardware.read_card()
+		print(f"Checked in student ID: {student_id}")
+		if student_id:
 			# Send the student ID to the server
 			http_client.send_data(student_id)
 		sleep(1)
-	"""
+
